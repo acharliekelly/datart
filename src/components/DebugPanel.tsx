@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { GenerationState } from '../utils/types';
+import ControlPanel from "./ControlPanel";
 import './DebugPanel.css';
 
 /* ===========================================
@@ -17,6 +18,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipLoaded,
 }) => {
   const [open, setOpen] = useState(true);
+  const [manualMode, setManualMode] = useState(false);
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
@@ -118,6 +120,23 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
               </span>
             </div>
           </div>
+
+          <div className="debug-section">
+            <div className="debug-row">
+              <span className="debug-label">Mode</span>
+              <span className="debug-value">
+                <button
+                  className="debug-toggle"
+                  title={`Switch to ${manualMode ? "Auto" : "Manual"} Mode`}
+                  onClick={() => setManualMode((m) => !m)}
+                >
+                  {manualMode ? "Manual" : "Auto"}
+                </button>
+              </span>
+            </div>
+          </div>
+
+          {manualMode && <ControlPanel {...state} />}
         </div>
       )}
     </div>
