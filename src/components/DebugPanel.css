@@ -1,45 +1,5 @@
-/* base layout (you may already have this) */
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-}
 
-.art-root {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: #020617;
-  color: white;
-}
-
-.style-layer {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.art-label {
-  position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  padding: 0.4rem 0.8rem;
-  background: rgba(0, 0, 0, 0.45);
-  color: white;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
-}
-
-/* debug panel
+/* debug panel */
 
 .debug-panel {
   position: absolute;
@@ -116,4 +76,4 @@ body,
   height: 14px;
   border-radius: 0.35rem;
   border: 1px solid rgba(15, 23, 42, 0.7);
-} */
+}
