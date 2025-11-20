@@ -7,7 +7,7 @@ import React, {
   useMemo
 } from "react";
 import type { ArtStyleProps } from "../utils/types";
-import * as traits from "../utils/userTraits";
+import * as traits from "../utils/fingerprint";
 
 interface ConstellationPoint {
   id: number;
