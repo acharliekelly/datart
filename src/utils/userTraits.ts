@@ -4,7 +4,8 @@ import type {
   IpApiResponse,
   StyleId, 
   GenerationState,
-GenerationOptions } from "./types";
+  GenerationOptions 
+} from "./types";
 
 /* ===========================================
  *  USER TRAITS / FINGERPRINT
