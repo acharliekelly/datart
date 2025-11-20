@@ -5,6 +5,7 @@
  */
 
 export type StyleId = "orbits" | "strata" | "constellation";
+export type Mode = "auto" | "manual";
 
 export interface IpInfo {
   ip: string;
@@ -36,4 +37,10 @@ export interface GenerationState {
   seed: number;
   palette: string[];
   styleId: StyleId;
+}
+
+export interface GenerationOptions {
+  mode: Mode;
+  manualSeed?: number | null;
+  manualStyle?: StyleId | null;
 }

@@ -1,18 +1,22 @@
 import React, {
   useEffect,
+  useMemo,
   useState,
 } from "react";
-import type {
-  UserTraits,
-  ArtStyleProps,
-  GenerationState
+import {
+  type UserTraits,
+  type ArtStyleProps,
+  type Mode,
+  type StyleId,
+  type GenerationState
 } from './utils/types';
-import * as traits from './utils/userTraits';
+import * as ut from './utils/userTraits';
 import OrbitArt from "./components/Orbits";
 import StrataArt from "./components/Strata";
 import ConstellationArt from "./components/Constellation";
 import DebugPanel from "./components/DebugPanel";
 import "./App.css";
+import ControlPanel from "./components/ControlPanel";
 
 
 /* ===========================================
@@ -21,38 +25,42 @@ import "./App.css";
  */
 
 const App: React.FC = () => {
-  const [generationState, setGenerationState] = useState<GenerationState>(
-    () => {
-      const baseTraits = traits.getBaseTraits();
-      return traits.buildGenerationState(baseTraits);
-    }
-  );
-
+  const [traits, setTraits] = useState<UserTraits>(() => ut.getBaseTraits());
   const [ipLoaded, setIpLoaded] = useState(false);
+  const [mode, setMode] = useState<Mode>("auto");
+  const [manualSeed, setManualSeed] = useState<number | null>(null);
+  const [manualStyle, setManualStyle] = useState<StyleId | null>(null);
+
 
   // After mount, fetch IP info and recompute state including IP.
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
-      const ipInfo = await traits.fetchIpInfo();
+      const ipInfo = await ut.fetchIpInfo();
       if (cancelled || !ipInfo) return;
 
-      setGenerationState((prev) => {
-        const traitsWithIp: UserTraits = {
-          ...prev.traits,
+      setTraits((prev) => ({
+        ...prev,
           ipInfo,
-        };
-        return traits.buildGenerationState(traitsWithIp);
-      });
-
+      }));
       setIpLoaded(true);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [traits]);
+
+  const generationState = useMemo<GenerationState>(
+    () =>
+      ut.buildGenerationState(traits, {
+        mode,
+        manualSeed,
+        manualStyle
+      }),
+      [traits, mode, manualSeed, manualStyle]
+  );
 
   const { styleId, palette, seed } = generationState;
 
@@ -66,7 +74,19 @@ const App: React.FC = () => {
       <div className="art-label">
         datart · {styleId} · client-side generative
       </div>
-      <DebugPanel state={generationState} ipLoaded={ipLoaded} />
+      <ControlPanel
+        mode={mode}
+        manualSeed={manualSeed}
+        manualStyle={manualStyle}
+        onModeChange={setMode}
+        onSeedChange={setManualSeed}
+        onStyleChange={setManualStyle}
+      />
+      <DebugPanel 
+        state={generationState} 
+        ipLoaded={ipLoaded}
+        mode={mode} 
+      />
     </div>
   );
 };

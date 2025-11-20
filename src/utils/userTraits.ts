@@ -2,7 +2,8 @@ import type {
   UserTraits, 
   IpInfo, 
   StyleId, 
-  GenerationState } from "./types";
+  GenerationState,
+GenerationOptions } from "./types";
 
 /* ===========================================
  *  USER TRAITS / FINGERPRINT
@@ -159,18 +160,29 @@ export function chooseStyle(traits: UserTraits, numericSeed: number): StyleId {
  * - palette
  * - styleId
  */
-export function buildGenerationState(traits: UserTraits): GenerationState {
+export function buildGenerationState(
+  traits: UserTraits,
+  options: GenerationOptions
+): GenerationState {
   const fingerprint = buildFingerprint(traits);
-  const seed = hashStringToInt(fingerprint);
-  const rngForPalette = makeRng(seed);
+  const baseSeed = hashStringToInt(fingerprint);
+  const effectiveSeed = 
+    options.mode === "manual" && options.manualSeed != null
+      ? options.manualSeed
+      : baseSeed;
+  const rngForPalette = makeRng(effectiveSeed);
   const palette = generatePalette(rngForPalette);
-  const styleId = chooseStyle(traits, seed);
+  const autoStyle = chooseStyle(traits, effectiveSeed);
+  const effectiveStyle: StyleId =
+    options.mode === "manual" && options.manualStyle
+      ? options.manualStyle
+      : autoStyle;
 
   return {
     traits,
     fingerprint,
-    seed,
+    seed: effectiveSeed,
     palette,
-    styleId,
+    styleId: effectiveStyle,
   };
 }
