@@ -4,7 +4,7 @@
  * ===========================================
  */
 
-export type StyleId = "orbits" | "strata" | "constellation";
+export type StyleId = "orbits" | "strata" | "constellation" | "bubbles";
 export type Mode = "auto" | "manual";
 
 export interface IpInfo {

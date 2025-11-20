@@ -121,7 +121,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   onChange={(e) =>
                     onStyleChange(
                       e.target.value
-                        ? (e.target.value as StyleId)
+                        ? (e.target.value as StyleId) 
                         : null
                     )
                   }
@@ -131,6 +131,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <option value="orbits">Orbits</option>
                   <option value="strata">Strata</option>
                   <option value="constellation">Constellation</option>
+                  <option value="bubbles">Bubbles</option>
                 </select>
               </div>
               <div className="control-hint">

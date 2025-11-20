@@ -13,6 +13,7 @@ import * as ut from './utils/fingerprint';
 import OrbitArt from "./components/Orbits";
 import StrataArt from "./components/Strata";
 import ConstellationArt from "./components/Constellation";
+import BubblesArt from "./components/Bubbles";
 import DebugPanel from "./components/DebugPanel";
 import "./App.css";
 import ControlPanel from "./components/ControlPanel";
@@ -54,9 +55,14 @@ const App: React.FC = () => {
 
   const { styleId, palette, seed } = generationState;
 
-  let StyleComponent: React.FC<ArtStyleProps> = OrbitArt;
-  if (styleId === "strata") StyleComponent = StrataArt;
-  if (styleId === "constellation") StyleComponent = ConstellationArt;
+  const STYLE_COMPONENTS: Record<StyleId, React.FC<ArtStyleProps>> = {
+    orbits: OrbitArt,
+    strata: StrataArt,
+    constellation: ConstellationArt,
+    bubbles: BubblesArt,
+  };
+
+  const StyleComponent = STYLE_COMPONENTS[styleId] ?? STYLE_COMPONENTS.orbits;
 
   return (
     <div className="art-root">
