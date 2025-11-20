@@ -1,7 +1,5 @@
 import type { 
   UserTraits, 
-  IpInfo, 
-  IpApiResponse,
   StyleId, 
   GenerationState,
   GenerationOptions 
@@ -92,44 +90,6 @@ export function makeRng(seed: number): () => number {
   };
 }
 
-/* ===========================================
- *  IP LOOKUP (CLIENT-SIDE ONLY)
- * ===========================================
- */
-
-export async function fetchIpInfo(): Promise<IpInfo | null> {
-  // 1. check cache first
-  const cached = localStorage.getItem("datart:ipInfo");
-  if (cached) {
-    try {
-      const ipInfo: IpInfo = JSON.parse(cached);
-      return ipInfo;
-    } catch {
-      // corrupted / outdated, ignore
-    }
-  }
-
-  // 2. Fetch from API
-  try {
-    const res = await fetch("https://ipapi.co/json/");
-    if (!res.ok) return null;
-
-    const data: IpApiResponse = await res.json();
-
-    const ipInfo: IpInfo = {
-      ip: data.ip,
-      city: data.city,
-      region: data.region,
-      country: data.country_name,
-      continentCode: data.continent_code,
-    };
-
-    return ipInfo;
-  } catch (err) {
-    console.error("IP fetch failed:", err);
-    return null;
-  }
-}
 
 /* ===========================================
  *  PALETTE + STYLE SELECTION
