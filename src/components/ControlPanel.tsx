@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { Mode, StyleId } from '../utils/types';
-
+import "./ControlPanel.css";
 
 interface ControlPanelProps {
   mode: Mode;
