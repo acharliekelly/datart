@@ -15,6 +15,14 @@ export interface IpInfo {
   continentCode?: string; // e.g. "NA", "EU", "AS"
 }
 
+export interface IpApiResponse {
+  ip: string;
+  city: string;
+  region: string;
+  country_name: string;
+  continent_code: string;
+}
+
 export interface UserTraits {
   timeZone: string;
   userAgent: string;
