@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -10,13 +9,14 @@ import {
   type StyleId,
   type GenerationState
 } from './utils/types';
-import * as ut from './utils/userTraits';
+import * as ut from './utils/fingerprint';
 import OrbitArt from "./components/Orbits";
 import StrataArt from "./components/Strata";
 import ConstellationArt from "./components/Constellation";
 import DebugPanel from "./components/DebugPanel";
 import "./App.css";
 import ControlPanel from "./components/ControlPanel";
+import { useIpInfo } from "./hooks/useIpInfo";
 
 
 /* ===========================================
@@ -25,32 +25,22 @@ import ControlPanel from "./components/ControlPanel";
  */
 
 const App: React.FC = () => {
-  const [traits, setTraits] = useState<UserTraits>(() => ut.getBaseTraits());
-  const [ipLoaded, setIpLoaded] = useState(false);
+  // const [traits, setTraits] = useState<UserTraits>(() => ut.getBaseTraits());
+
+  const baseTraits = useMemo<UserTraits>(() => ut.getBaseTraits(), []);
+  
+  const { ipInfo, loading: ipLoading, error: ipError } = useIpInfo();
+
+  const traits = useMemo<UserTraits>(() => {
+    if (!ipInfo) return baseTraits;
+    return { ...baseTraits, ipInfo };
+  }, [baseTraits, ipInfo]);
+
   const [mode, setMode] = useState<Mode>("auto");
   const [manualSeed, setManualSeed] = useState<number | null>(null);
   const [manualStyle, setManualStyle] = useState<StyleId | null>(null);
 
-
-  // After mount, fetch IP info and recompute state including IP.
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      const ipInfo = await ut.fetchIpInfo();
-      if (cancelled || !ipInfo) return;
-
-      setTraits((prev) => ({
-        ...prev,
-          ipInfo,
-      }));
-      setIpLoaded(true);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [traits]);
+  const ipLoaded = !!ipInfo && !ipLoading;
 
   const generationState = useMemo<GenerationState>(
     () =>
@@ -86,6 +76,7 @@ const App: React.FC = () => {
         state={generationState} 
         ipLoaded={ipLoaded}
         mode={mode} 
+        ipError={ipError}
       />
     </div>
   );

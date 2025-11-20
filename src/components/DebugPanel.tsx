@@ -11,12 +11,14 @@ interface DebugPanelProps {
   state: GenerationState;
   ipLoaded: boolean;
   mode: Mode;
+  ipError?: string | null;
 }
 
 const DebugPanel: React.FC<DebugPanelProps> = ({
   state,
   ipLoaded,
-  mode
+  mode,
+  ipError
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -109,21 +111,16 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             </div>
           </div>
 
+        {ipError && (
           <div className="debug-section">
             <div className="debug-row">
-              <span className="debug-label">Palette</span>
-              <span className="debug-value debug-palette">
-                {state.palette.map((color, idx) => (
-                  <span
-                    key={idx}
-                    className="debug-swatch"
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
-                ))}
-              </span>
+              <span className="debug-label">IP Error</span>
+              <span className="debug-value">{ipError}</span>
             </div>
           </div>
+        )}
+          
+
         </div>
       )}
     </div>
