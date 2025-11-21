@@ -2,8 +2,8 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { ArtStyleProps } from "../utils/types";
-import * as traits from "../utils/fingerprint";
+import type { BaseArtProps, OrbitsOptions } from "../utils/types";
+import * as fp from "../utils/fingerprint";
 
 /* ===========================================
  *  STYLE 1: ORBITS
@@ -20,25 +20,33 @@ interface OrbitShape {
   offsetY: number;
 }
 
-const OrbitArt: React.FC<ArtStyleProps> = ({ seed, palette }) => {
-  const shapes = useMemo<OrbitShape[]>(() => {
-    const rng = traits.makeRng(seed + 101);
-    const circles: OrbitShape[] = [];
-    const count = 10 + Math.floor(rng() * 10); // 10–19 rings
+const OrbitArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
+  const opts = (options ?? {}) as Partial<OrbitsOptions>;
+  const ringCount = opts.ringCount ?? 14;
+  const jitter = opts.jitter ?? 80;
 
-    for (let i = 0; i < count; i++) {
+  // use ringCount & jitter instead of fixed values:
+  // const count = 10 + Math.floor(rng() * 10);
+  const shapes = useMemo<OrbitShape[]>(() => {
+    const rng = fp.makeRng(seed + 101);
+    const count =
+      ringCount + Math.floor((rng() - 0.5) * ringCount * 0.3); // ±30%
+    const finalCount = Math.max(5, count);
+    const circles: OrbitShape[] = [];
+
+    for (let i = 0; i < finalCount; i++) {
       circles.push({
         id: i,
-        size: 80 + rng() * 420, // px
+        size: 80 + rng() * 420,
         thickness: 1 + rng() * 6,
         color: palette[Math.floor(rng() * palette.length)],
         rotation: rng() * 360,
-        offsetX: (rng() - 0.5) * 80, // px
-        offsetY: (rng() - 0.5) * 80, // px
+        offsetX: (rng() - 0.5) * jitter,
+        offsetY: (rng() - 0.5) * jitter,
       });
     }
     return circles;
-  }, [seed, palette]);
+  }, [seed, palette, ringCount, jitter]);
 
   return (
     <div className="style-layer">

@@ -2,8 +2,8 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { ArtStyleProps } from "../utils/types";
-import * as traits from "../utils/fingerprint";
+import type { BaseArtProps, StrataOptions } from "../utils/types";
+import * as fp from "../utils/fingerprint";
 
 /* ===========================================
  *  STYLE 2: STRATA
@@ -19,24 +19,28 @@ interface StrataBand {
   opacity: number;
 }
 
-const StrataArt: React.FC<ArtStyleProps> = ({ seed, palette }) => {
-  const bands = useMemo<StrataBand[]>(() => {
-    const rng = traits.makeRng(seed + 202);
-    const list: StrataBand[] = [];
-    const count = 10 + Math.floor(rng() * 10);
+const StrataArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
+  const opts = (options ?? {}) as Partial<StrataOptions>;
+  const bandCount = opts.bandCount ?? 16;
+  const maxTilt = opts.maxTilt ?? 8;
+  // use bandCount in place of the 10–20 count, and maxTilt for angle range
 
-    for (let i = 0; i < count; i++) {
+  const bands = useMemo<StrataBand[]>(() => {
+    const rng = fp.makeRng(seed + 202);
+    const list: StrataBand[] = [];
+
+    for (let i = 0; i < bandCount; i++) {
       list.push({
         id: i,
         thickness: 10 + rng() * 80, // px
         top: rng() * 100, // vh
-        angle: (rng() - 0.5) * 12, // -6 to +6 deg
+        angle: (rng() - 0.5) * maxTilt, // -6 to +6 deg
         color: palette[Math.floor(rng() * palette.length)],
         opacity: 0.2 + rng() * 0.7,
       });
     }
     return list;
-  }, [seed, palette]);
+  }, [seed, palette, bandCount, maxTilt]);
 
   const backgroundGradient = useMemo<string>(() => {
     const stops = palette
@@ -69,7 +73,7 @@ const StrataArt: React.FC<ArtStyleProps> = ({ seed, palette }) => {
       })}
 
       {/* subtle inner frame */}
-      <div
+      <div className="subtle-frame"
         style={{
           position: "absolute",
           inset: "6vh 8vw",

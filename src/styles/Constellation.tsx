@@ -6,8 +6,8 @@ import React, {
   type CSSProperties,
   useMemo
 } from "react";
-import type { ArtStyleProps } from "../utils/types";
-import * as traits from "../utils/fingerprint";
+import type { BaseArtProps, ConstellationOptions } from "../utils/types";
+import * as fp from "../utils/fingerprint";
 
 interface ConstellationPoint {
   id: number;
@@ -24,20 +24,25 @@ interface ConstellationLine {
   b: ConstellationPoint;
 }
 
-const ConstellationArt: React.FC<ArtStyleProps> = ({
+const ConstellationArt: React.FC<BaseArtProps> = ({
   seed,
   palette,
+  options,
 }) => {
+  const opts = (options ?? {}) as Partial<ConstellationOptions>;
+  const pointCount = opts.pointCount ?? 24;
+  const connectionChance = opts.connectionChance ?? 0.6;
+  // use pointCount instead of fixed 18–29, connectionChance instead of 0.6
+
   const { points, lines, background } = useMemo<{
     points: ConstellationPoint[];
     lines: ConstellationLine[];
     background: string;
   }>(() => {
-    const rng = traits.makeRng(seed + 303);
-    const count = 18 + Math.floor(rng() * 12); // 18–29 points
+    const rng = fp.makeRng(seed + 303);
     const pts: ConstellationPoint[] = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < pointCount; i++) {
       pts.push({
         id: i,
         x: rng() * 100, // vw
@@ -49,10 +54,10 @@ const ConstellationArt: React.FC<ArtStyleProps> = ({
     }
 
     const ln: ConstellationLine[] = [];
-    for (let i = 0; i < count - 1; i++) {
-      if (rng() < 0.6) {
+    for (let i = 0; i < pointCount - 1; i++) {
+      if (rng() < connectionChance) {
         const j = i + 1 + Math.floor(rng() * 3);
-        if (j < count) {
+        if (j < pointCount) {
           ln.push({ id: `${i}-${j}`, a: pts[i], b: pts[j] });
         }
       }
@@ -61,7 +66,7 @@ const ConstellationArt: React.FC<ArtStyleProps> = ({
     const bg = `radial-gradient(circle at 50% 10%, rgba(255,255,255,0.12), transparent 60%), radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08), transparent 55%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15), transparent 50%), #020617`;
 
     return { points: pts, lines: ln, background: bg };
-  }, [seed, palette]);
+  }, [seed, palette, pointCount, connectionChance]);
 
   return (
     <div

@@ -1,6 +1,6 @@
 import React, { type CSSProperties, useMemo } from "react";
-import type { ArtStyleProps } from "../utils/types";
-
+import type { BaseArtProps, BubblesOptions } from "../utils/types";
+import { makeRng } from "../utils/fingerprint";
 
 interface Bubble {
   id: number;
@@ -13,41 +13,36 @@ interface Bubble {
   borderLightness: number;
 }
 
-function makeRng(seed: number): () => number {
-  return function next() {
-    // same LCG as elsewhere
-    seed = (seed * 1664525 + 1013904223) % 4294967296;
-    return seed / 4294967296;
-  };
-}
-
-/**
- * Bubbles: loosely based on Orbits, but instead of rings centered on a point,
- * we scatter circular "bubbles" around the center with soft glow and overlap.
- */
-const BubblesArt: React.FC<ArtStyleProps> = ({
+export const BubblesArt: React.FC<BaseArtProps> = ({
   seed,
   palette,
+  options,
 }) => {
+  const opts = (options ?? {}) as Partial<BubblesOptions>;
+
+  const bubbleCount = opts.bubbleCount ?? 26;
+  const spread = opts.spread ?? 220;
+
   const bubbles = useMemo<Bubble[]>(() => {
     const rng = makeRng(seed + 404);
     const list: Bubble[] = [];
 
-    const count = 18 + Math.floor(rng() * 18); // 18–35 bubbles
+    const count =
+      bubbleCount + Math.floor((rng() - 0.5) * bubbleCount * 0.2); // ±20%
+    const finalCount = Math.max(6, count);
 
-    for (let i = 0; i < count; i++) {
-      // Radius from center (bias toward center with sqrt)
-      const r = Math.sqrt(rng()) * 220; // px from center
+    for (let i = 0; i < finalCount; i++) {
+      const r = Math.sqrt(rng()) * spread;
       const theta = rng() * Math.PI * 2;
 
       const offsetX = r * Math.cos(theta);
       const offsetY = r * Math.sin(theta);
 
-      const size = 40 + rng() * 160; // 40–200 px
+      const size = 40 + rng() * 160;
       const color = palette[Math.floor(rng() * palette.length)];
       const opacity = 0.25 + rng() * 0.6;
-      const blur = 12 + rng() * 40; // px
-      const borderLightness = 55 + rng() * 25; // for subtle highlight
+      const blur = 12 + rng() * 40;
+      const borderLightness = 55 + rng() * 25;
 
       list.push({
         id: i,
@@ -62,7 +57,7 @@ const BubblesArt: React.FC<ArtStyleProps> = ({
     }
 
     return list;
-  }, [seed, palette]);
+  }, [seed, palette, bubbleCount, spread]);
 
   return (
     <div className="style-layer">
@@ -74,7 +69,6 @@ const BubblesArt: React.FC<ArtStyleProps> = ({
           width: `${b.size}px`,
           height: `${b.size}px`,
           borderRadius: "9999px",
-          // solid fill + soft glow, screen blend for nice overlaps
           background: b.color,
           opacity: b.opacity,
           transform: `translate(-50%, -50%) translate(${b.offsetX}px, ${b.offsetY}px)`,
@@ -86,7 +80,6 @@ const BubblesArt: React.FC<ArtStyleProps> = ({
         return <div key={b.id} style={style} />;
       })}
 
-      {/* faint center "mist" to tie the composition together */}
       <div
         style={{
           position: "absolute",
