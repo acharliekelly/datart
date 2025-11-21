@@ -5,7 +5,6 @@ import React, {
 import type {
   Mode,
   StyleId,
-  AllStyleOptions,
   GenerationState,
   UserTraits
 } from './logic/types';
@@ -14,7 +13,7 @@ import { buildGenerationState } from './logic/generation';
 import { getBaseTraits } from "./logic/fingerprint";
 import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
-import { ArtContainer } from "./components/ui/ArtContainer";
+import ArtContainer from "./components/ui/ArtContainer";
 import { useIpInfo } from "./hooks/useIpInfo";
 import "./App.css";
 
@@ -38,24 +37,6 @@ const App: React.FC = () => {
   const [mode, setMode] = useState<Mode>("auto");
   const [manualSeed, setManualSeed] = useState<number | null>(null);
   const [manualStyle, setManualStyle] = useState<StyleId | null>(null);
-  const [styleOptions, setStyleOptions] = useState<AllStyleOptions>(() => ({
-    orbits: {
-      ringCount: 14,
-      jitter: 80,
-    },
-    bubbles: {
-      bubbleCount: 26,
-      spread: 220,
-    },
-    strata: {
-      bandCount: 16,
-      maxTilt: 8,
-    },
-    constellation: {
-      pointCount: 24,
-      connectionChance: 0.6,
-    },
-  }));
 
   const ipLoaded = !!ipInfo && !ipLoading;
 
@@ -80,12 +61,9 @@ const App: React.FC = () => {
         mode={mode}
         manualSeed={manualSeed}
         manualStyle={manualStyle}
-        effectiveStyleId={generationState.styleId}
-        styleOptions={styleOptions}
         onModeChange={setMode}
         onSeedChange={setManualSeed}
         onStyleChange={setManualStyle}
-        onStyleOptionsChange={setStyleOptions}
       />
       <DebugPanel 
         state={generationState} 

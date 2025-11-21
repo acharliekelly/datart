@@ -1,21 +1,18 @@
 import React from "react";
-import type { GenerationState, ArtStyleProps } from "../../logic/types";
-import OrbitArt from "../art/Orbits";
-import StrataArt from "../art/Strata";
-import ConstellationArt from "../art/Constellation";
-import BubblesArt from "../art/Bubbles";
+import type { GenerationState } from "../../logic/types";
+import { STYLES } from "../art/styleRegistry";
 
 interface ArtContainerProps {
   state: GenerationState;
 }
 
-export const ArtContainer: React.FC<ArtContainerProps> = ({ state }) => {
+const ArtContainer: React.FC<ArtContainerProps> = ({ state }) => {
   const { styleId, seed, palette } = state;
+  const styleEntry = STYLES[styleId];
 
-  let StyleComponent: React.FC<ArtStyleProps> = OrbitArt;
-  if (styleId === "strata") StyleComponent = StrataArt;
-  if (styleId === "constellation") StyleComponent = ConstellationArt;
-  if (styleId === "bubbles") StyleComponent = BubblesArt;
+  const StyleComponent = styleEntry.component;
 
   return <StyleComponent seed={seed} palette={palette} />;
 };
+
+export default ArtContainer;

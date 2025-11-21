@@ -104,3 +104,13 @@
   font-size: 0.65rem;
   color: #6b7280;
 }
+
+.control-range {
+  flex: 1;
+}
+
+.control-range-value {
+  width: 2rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

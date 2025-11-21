@@ -1,68 +1,86 @@
-import React, { useState } from "react";
-import type { AllStyleOptions, Mode, StyleId } from '../logic/types';
+import React, { useState, type ChangeEvent } from "react";
+import type { Mode, StyleId } from "../../logic/types";
 import "./ControlPanel.css";
 
 interface ControlPanelProps {
   mode: Mode;
   manualSeed: number | null;
   manualStyle: StyleId | null;
-  effectiveStyleId: StyleId;
-  styleOptions: AllStyleOptions;
   onModeChange: (mode: Mode) => void;
   onSeedChange: (seed: number | null) => void;
   onStyleChange: (style: StyleId | null) => void;
-  onStyleOptionsChange: (next: AllStyleOptions) => void; 
+  onComplexityChange: (shapeCount: number | null) => void;
 }
 
-const ControlPanel: React.FC<ControlPanelProps> = ({ 
+const ControlPanel: React.FC<ControlPanelProps> = ({
   mode,
   manualSeed,
   manualStyle,
-  effectiveStyleId,
-  styleOptions,
   onModeChange,
   onSeedChange,
   onStyleChange,
-  onStyleOptionsChange
- }) => {
-
+  onComplexityChange,
+}) => {
   const [open, setOpen] = useState(true);
 
-  const activeStyleId = effectiveStyleId;
-  const opts = styleOptions[activeStyleId];
+  const dialValue = manualSeed ?? 50; // 0–100 dial
 
-  const updateOptions = (partial: Partial<AllStyleOptions[StyleId]>) => {
-    onStyleOptionsChange({
-      ...styleOptions,
-      [activeStyleId]: {
-        ...(styleOptions as any)[activeStyleId],
-        ...partial,
-      },
-    });
-  };
-
-  const handleSeedInput = (value: string) => {
-    if (value.trim() === "") {
+  const handleSeedChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = Number(event.target.value);
+    if (Number.isNaN(value)) {
       onSeedChange(null);
       return;
     }
-    const parsed = Number(value);
-    if (!Number.isNaN(parsed)) {
-      onSeedChange(parsed);
-    }
+    onSeedChange(value);
   };
 
   const handleRandomize = () => {
-    const randomSeed = Math.floor(Math.random() * 1_000_000);
-    onSeedChange(randomSeed);
-    // also ensure we're in manual mode if user hits random
+    const randomDial = Math.floor(Math.random() * 101); // 0–100
+    onSeedChange(randomDial);
     if (mode !== "manual") {
       onModeChange("manual");
     }
   };
 
+  const handleComplexityChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = Number(event.target.value);
+    if (Number.isNaN(value)) {
+      onComplexityChange(null);
+      return;
+    }
+    onComplexityChange(value);
+  }
+
+  const handleStyleChange = (
+    event: ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = event.target.value;
+
+    if (value === "") {
+      onStyleChange(null);
+      return;
+    }
+
+    // Explicitly narrow to StyleId without casts
+    if (
+      value === "orbits" ||
+      value === "strata" ||
+      value === "constellation" ||
+      value === "bubbles"
+    ) {
+      onStyleChange(value);
+    } else {
+      // Unknown value (shouldn't happen with our options)
+      onStyleChange(null);
+    }
+  };
+
   return (
-      <div className="control-panel">
+    <div className="control-panel">
       <button
         className="control-toggle"
         onClick={() => setOpen((o) => !o)}
@@ -74,19 +92,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <div className="control-body">
           <h2 className="control-title">Controls</h2>
 
-          {/* Mode selection */}
+          {/* Mode */}
           <div className="control-section">
-            <div className="control-row">
-              <span className="control-label">
-                {`Style options (${activeStyleId})`}
-              </span>
-
-              {mode !== "manual" && (
-                <div className="control-hint">
-                  Switch to manual mode to tweak style options.
-                </div>
-              )}
-            </div>
             <div className="control-row">
               <span className="control-label">Mode</span>
               <div className="control-value">
@@ -114,33 +121,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           </div>
 
-          {/* Seed */}
-          <div className="control-section">
-            <div className="control-row">
-              <span className="control-label">Seed</span>
-              <div className="control-value control-seed-row">
-                <input
-                  type="number"
-                  className="control-input"
-                  value={manualSeed ?? ""}
-                  onChange={(e) => handleSeedInput(e.target.value)}
-                  disabled={mode !== "manual"}
-                  placeholder="auto"
-                />
-                <button
-                  className="control-button"
-                  onClick={handleRandomize}
-                >
-                  Random
-                </button>
-              </div>
-              <div className="control-hint">
-                In manual mode, seed overrides the fingerprint hash.
-              </div>
-            </div>
-          </div>
-
-          {/* Style */}
+           {/* Style selector */}
           <div className="control-section">
             <div className="control-row">
               <span className="control-label">Style</span>
@@ -148,13 +129,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 <select
                   className="control-select"
                   value={manualStyle ?? ""}
-                  onChange={(e) =>
-                    onStyleChange(
-                      e.target.value
-                        ? (e.target.value as StyleId) 
-                        : null
-                    )
-                  }
+                  onChange={handleStyleChange}
                   disabled={mode !== "manual"}
                 >
                   <option value="">auto</option>
@@ -170,178 +145,62 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             </div>
           </div>
 
-          {/* style-specific controls */}
 
-          {/* Orbits */}
-          {mode === "manual" && activeStyleId === "orbits" && (
-            <>
-              <div className="control-row">
-                <span className="control-label">Ring count</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={3}
-                    max={40}
-                    value={(opts as any).ringCount ?? 14}
-                    onChange={(e) =>
-                      updateOptions({
-                        ringCount: Number(e.target.value) || 14,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="control-row">
-                <span className="control-label">Jitter (px)</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={0}
-                    max={200}
-                    value={(opts as any).jitter ?? 80}
-                    onChange={(e) =>
-                      updateOptions({
-                        jitter: Number(e.target.value) || 80,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Constellation */}
-          {mode === "manual" && activeStyleId === "constellation" && (
-            <>
-              <div className="control-row">
-                <span className="control-label">Point count</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={5}
-                    max={80}
-                    value={(opts as any).pointCount ?? 24}
-                    onChange={(e) =>
-                      updateOptions({
-                        pointCount: Number(e.target.value) || 24,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="control-row">
-                <span className="control-label">
-                  Connection chance (0–1)
+          {/* Seed dial */}
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Seed dial</span>
+              <div className="control-value control-seed-row">
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="control-range"
+                  value={dialValue}
+                  onChange={handleSeedChange}
+                  disabled={mode !== "manual"}
+                />
+                <span className="control-range-value">
+                  {dialValue}
                 </span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    step="0.05"
-                    min={0}
-                    max={1}
-                    className="control-input"
-                    value={(opts as any).connectionChance ?? 0.6}
-                    onChange={(e) =>
-                      updateOptions({
-                        connectionChance: Math.min(
-                          1,
-                          Math.max(0, Number(e.target.value) || 0.6)
-                        ),
-                      } as any)
-                    }
-                  />
-                </div>
+                <button
+                  className="control-button"
+                  onClick={handleRandomize}
+                >
+                  Random
+                </button>
               </div>
-            </>
-          )}
+              <div className="control-hint">
+                In manual mode, this dial perturbs the fingerprint to
+                create a new variation.
+              </div>
+            </div>
+          </div>
 
-          {/* Bubbles */}
-          {mode === "manual" && activeStyleId === "bubbles" && (
-            <>
-              <>
-              <div className="control-row">
-                <span className="control-label">Bubble count</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={3}
-                    max={40}
-                    value={(opts as any).bubbleCount ?? 26}
-                    onChange={(e) =>
-                      updateOptions({
-                        bubbleCount: Number(e.target.value) || 26,
-                      } as any)
-                    }
-                  />
-                </div>
+          {/* Complexity dial */}
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Complexity dial</span>
+              <div className="control-value">
+                <input
+                  type="range"
+                  min={1}
+                  max={100}
+                  step={1}
+                  className="control-range"
+                  value={dialValue}
+                  onChange={handleComplexityChange}
+                  disabled={mode !== "manual"}
+                />
               </div>
-              <div className="control-row">
-                <span className="control-label">Spread (px)</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={10}
-                    max={300}
-                    value={(opts as any).spread ?? 220}
-                    onChange={(e) =>
-                      updateOptions({
-                        spread: Number(e.target.value) || 220,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-            </>
-            </>
-          )}
+            </div>
+            <div className="control-hint">
+              In manual mode, this dial adjusts the number of shapes.
+            </div>
+          </div>
 
-          {/* Strata */}
-          {mode === "manual" && activeStyleId === "strata" && (
-            <>
-              <>
-              <div className="control-row">
-                <span className="control-label">Band count</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={3}
-                    max={40}
-                    value={(opts as any).bandCount ?? 16}
-                    onChange={(e) =>
-                      updateOptions({
-                        bandCount: Number(e.target.value) || 16,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-              <div className="control-row">
-                <span className="control-label">Maximum Tilt (degrees)</span>
-                <div className="control-value">
-                  <input
-                    type="number"
-                    className="control-input"
-                    min={2}
-                    max={30}
-                    value={(opts as any).maxTilt ?? 8}
-                    onChange={(e) =>
-                      updateOptions({
-                        maxTilt: Number(e.target.value) || 8,
-                      } as any)
-                    }
-                  />
-                </div>
-              </div>
-            </>
-            </>
-          )}
-
+         
         </div>
       )}
     </div>

@@ -25,10 +25,18 @@ export function buildGenerationState(
 ): GenerationState {
   const fingerprint = buildFingerprint(traits);
   const baseSeed = hashStringToInt(fingerprint);
-  const effectiveSeed = 
-    options.mode === "manual" && options.manualSeed != null
-      ? options.manualSeed
-      : baseSeed;
+
+  // NEW: manualSeed is treated as a small "dial" (0-100),
+  // used to perturb the fingerprint before hashing
+  let effectiveSeed = baseSeed;
+
+  if (options.mode === "manual" && options.manualSeed != null) {
+    const dial = options.manualSeed;
+    const dialString = `${fingerprint}|dial:${dial}`;
+    effectiveSeed = hashStringToInt(dialString);
+  }
+
+  
   const rngForPalette = makeRng(effectiveSeed);
   const palette = generatePalette(rngForPalette);
   const autoStyle = chooseStyle(traits, effectiveSeed);

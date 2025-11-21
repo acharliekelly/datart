@@ -4,8 +4,10 @@
  * ===========================================
  */
 
-export type StyleId = "orbits" | "strata" | "constellation" | "bubbles";
 export type Mode = "auto" | "manual";
+
+import type { StyleId as RegisteredStyleId } from "../components/art/styleRegistry";
+export type StyleId = RegisteredStyleId;
 
 export interface OrbitsOptions {
   ringCount: number;  // base number of rings
