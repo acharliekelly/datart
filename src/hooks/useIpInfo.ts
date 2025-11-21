@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { IpInfo, IpApiResponse } from "../utils/types";
+import type { IpInfo, IpApiResponse } from "../logic/types";
 
 const STORAGE_KEY = "datart:ipInfo";
 

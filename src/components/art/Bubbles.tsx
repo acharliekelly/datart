@@ -1,6 +1,6 @@
 import React, { type CSSProperties, useMemo } from "react";
-import type { BaseArtProps, BubblesOptions } from "../utils/types";
-import { makeRng } from "../utils/fingerprint";
+import type { BaseArtProps, BubblesOptions } from "../../logic/types";
+import { makeRng } from "../../logic/rng";
 
 interface Bubble {
   id: number;

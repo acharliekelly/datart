@@ -6,8 +6,8 @@ import React, {
   type CSSProperties,
   useMemo
 } from "react";
-import type { BaseArtProps, ConstellationOptions } from "../utils/types";
-import * as fp from "../utils/fingerprint";
+import type { BaseArtProps, ConstellationOptions } from "../../logic/types";
+import { makeRng } from "../../logic/rng";
 
 interface ConstellationPoint {
   id: number;
@@ -39,7 +39,7 @@ const ConstellationArt: React.FC<BaseArtProps> = ({
     lines: ConstellationLine[];
     background: string;
   }>(() => {
-    const rng = fp.makeRng(seed + 303);
+    const rng = makeRng(seed + 303);
     const pts: ConstellationPoint[] = [];
 
     for (let i = 0; i < pointCount; i++) {

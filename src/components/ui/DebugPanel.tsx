@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { GenerationState, Mode } from '../utils/types';
+import type { GenerationState, Mode } from "../../logic/types";
 import './DebugPanel.css';
 
 /* ===========================================
@@ -111,16 +111,30 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             </div>
           </div>
 
-        {ipError && (
+          {ipError && (
+            <div className="debug-section">
+              <div className="debug-row">
+                <span className="debug-label">IP Error</span>
+                <span className="debug-value">{ipError}</span>
+              </div>
+            </div>
+          )}
+
           <div className="debug-section">
             <div className="debug-row">
-              <span className="debug-label">IP Error</span>
-              <span className="debug-value">{ipError}</span>
+              <span className="debug-label">Palette</span>
+              <span className="debug-value debug-palette">
+                {state.palette.map((color, idx) => (
+                  <span
+                    key={idx}
+                    className="debug-swatch"
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </span>
             </div>
           </div>
-        )}
-          
-
         </div>
       )}
     </div>

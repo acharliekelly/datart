@@ -4,20 +4,17 @@ import React, {
 } from "react";
 import type {
   Mode,
-  BaseArtProps,
   StyleId,
   AllStyleOptions,
   GenerationState,
   UserTraits
-} from './utils/types';
-import * as fp from './utils/fingerprint';
-import { STYLE_COMPONENTS } from "./utils/style";
-import OrbitArt from "./styles/Orbits";
-import StrataArt from "./styles/Strata";
-import ConstellationArt from "./styles/Constellation";
-import BubblesArt from "./styles/Bubbles";
-import DebugPanel from "./components/DebugPanel";
-import ControlPanel from "./components/ControlPanel";
+} from './logic/types';
+
+import { buildGenerationState } from './logic/generation';
+import { getBaseTraits } from "./logic/fingerprint";
+import DebugPanel from "./components/ui/DebugPanel";
+import ControlPanel from "./components/ui/ControlPanel";
+import { ArtContainer } from "./components/ui/ArtContainer";
 import { useIpInfo } from "./hooks/useIpInfo";
 import "./App.css";
 
@@ -29,7 +26,7 @@ import "./App.css";
  */
 
 const App: React.FC = () => {
-  const baseTraits = useMemo<UserTraits>(() => fp.getBaseTraits(), []);
+  const baseTraits = useMemo<UserTraits>(() => getBaseTraits(), []);
   
   const { ipInfo, loading: ipLoading, error: ipError } = useIpInfo();
 
@@ -64,7 +61,7 @@ const App: React.FC = () => {
 
   const generationState = useMemo<GenerationState>(
     () =>
-      fp.buildGenerationState(traits, {
+      buildGenerationState(traits, {
         mode,
         manualSeed,
         manualStyle
@@ -72,26 +69,18 @@ const App: React.FC = () => {
       [traits, mode, manualSeed, manualStyle]
   );
 
-  const { styleId, palette, seed } = generationState;
-
-  const StyleComponent = STYLE_COMPONENTS[styleId] ?? STYLE_COMPONENTS.orbits;
-  const currentOptions = styleOptions[styleId];
 
   return (
     <div className="art-root">
-      <StyleComponent 
-        seed={seed} 
-        palette={palette} 
-        options={currentOptions} 
-      />
+      <ArtContainer state={generationState} />
       <div className="art-label">
-        datart · {styleId} · client-side generative
+        datart · {generationState.styleId} · client-side generative
       </div>
       <ControlPanel
         mode={mode}
         manualSeed={manualSeed}
         manualStyle={manualStyle}
-        effectiveStyleId={styleId}
+        effectiveStyleId={generationState.styleId}
         styleOptions={styleOptions}
         onModeChange={setMode}
         onSeedChange={setManualSeed}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import type { AllStyleOptions, Mode, StyleId } from '../utils/types';
+import type { AllStyleOptions, Mode, StyleId } from '../logic/types';
 import "./ControlPanel.css";
 
 interface ControlPanelProps {

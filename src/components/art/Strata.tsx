@@ -2,8 +2,8 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps, StrataOptions } from "../utils/types";
-import * as fp from "../utils/fingerprint";
+import type { BaseArtProps, StrataOptions } from "../../logic/types";
+import { makeRng } from "../../logic/rng";
 
 /* ===========================================
  *  STYLE 2: STRATA
@@ -26,7 +26,7 @@ const StrataArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
   // use bandCount in place of the 10–20 count, and maxTilt for angle range
 
   const bands = useMemo<StrataBand[]>(() => {
-    const rng = fp.makeRng(seed + 202);
+    const rng = makeRng(seed + 202);
     const list: StrataBand[] = [];
 
     for (let i = 0; i < bandCount; i++) {

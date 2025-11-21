@@ -2,8 +2,8 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps, OrbitsOptions } from "../utils/types";
-import * as fp from "../utils/fingerprint";
+import type { BaseArtProps, OrbitsOptions } from "../../logic/types";
+import { makeRng } from "../../logic/rng";
 
 /* ===========================================
  *  STYLE 1: ORBITS
@@ -28,7 +28,7 @@ const OrbitArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
   // use ringCount & jitter instead of fixed values:
   // const count = 10 + Math.floor(rng() * 10);
   const shapes = useMemo<OrbitShape[]>(() => {
-    const rng = fp.makeRng(seed + 101);
+    const rng = makeRng(seed + 101);
     const count =
       ringCount + Math.floor((rng() - 0.5) * ringCount * 0.3); // ±30%
     const finalCount = Math.max(5, count);
