@@ -7,6 +7,39 @@
 export type StyleId = "orbits" | "strata" | "constellation" | "bubbles";
 export type Mode = "auto" | "manual";
 
+export interface OrbitsOptions {
+  ringCount: number;  // base number of rings
+  jitter: number; // how far from center rings can drift (px)
+}
+
+export interface BubblesOptions {
+  bubbleCount: number;  // approx # of bubbles
+  spread: number; // radius from center (px)
+}
+
+export interface StrataOptions {
+  bandCount: number;
+  maxTilt: number;  // degrees
+}
+
+export interface ConstellationOptions {
+  pointCount: number;
+  connectionChance: number; // 0-1
+}
+
+export interface AllStyleOptions {
+  orbits: OrbitsOptions;
+  bubbles: BubblesOptions;
+  strata: StrataOptions;
+  constellation: ConstellationOptions;
+};
+
+export interface BaseArtProps {
+  seed: number;
+  palette: string[];
+  options?: unknown;
+}
+
 export interface IpInfo {
   ip: string;
   city?: string;
