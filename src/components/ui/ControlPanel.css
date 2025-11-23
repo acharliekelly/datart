@@ -114,3 +114,7 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+
+.control-row + .control-row {
+  margin-top: 0.25rem;
+}

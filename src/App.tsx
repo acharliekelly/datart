@@ -1,6 +1,7 @@
 import React, {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -21,24 +22,14 @@ import { useIpInfo } from "./hooks/useIpInfo";
 import "./App.css";
 
 
-
-/* ===========================================
- *  APP ROOT
- * ===========================================
- */
-
 const App: React.FC = () => {
   // 1) traits
   const [traits, setTraits] = useState<UserTraits>(() => getBaseTraits());
+  const [isAnimating, setIsAnimating] = useState(false);
+  const complexityDirectionRef = useRef<1 | -1>(1);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
 
-  useEffect(() => {
-    if (!ipInfo) return;
-    setTraits((prev) => applyIpInfo(prev, ipInfo));
-  }, [ipInfo]);
-
-  
   // 2) options - SINGLE source of truth for mode
   const [options, setOptions] = useState<GenerationOptions>({
     mode: "auto",
@@ -53,6 +44,54 @@ const App: React.FC = () => {
     () => buildGenerationState(traits, options),
       [traits, options]
   );
+
+  useEffect(() => {
+    if (!isAnimating) return;
+
+    let frameId: number;
+    let lastTime = performance.now();
+
+    const speed = 30;
+
+    const step = (timestamp: number) => {
+      const dt = (timestamp - lastTime) / 1000; // seconds
+      lastTime = timestamp;
+
+      setOptions((prev) => {
+        const current = prev.complexity ?? 50;
+        let dir = complexityDirectionRef.current;
+
+        let next = current + dir * speed * dt;
+
+        if (next >= 100) {
+          next = 100;
+          dir = -1;
+        } else if (next <= 0) {
+          next = 0;
+          dir = 1;
+        }
+
+        complexityDirectionRef.current = dir;
+
+        return { ...prev, complexity: next };
+      });
+      frameId = requestAnimationFrame(step);
+    }
+
+    frameId = requestAnimationFrame(step);
+
+    if (ipInfo) {
+      setTraits((prev) => applyIpInfo(prev, ipInfo));
+    }
+
+    return () => {
+      cancelAnimationFrame(frameId);
+    }
+    
+  }, [ipInfo, isAnimating, setOptions]);
+
+  
+  
 
   // 4) handlers that only ever update "options"
   const handleModeChange = (mode: Mode) =>
@@ -73,6 +112,10 @@ const App: React.FC = () => {
       paletteShift: (prev.paletteShift ?? 0) + 1,
     }));
 
+  const handleToggleAnimation = () => {
+    setIsAnimating((prev) => !prev);
+  }
+
 
   return (
     <div className="art-root">
@@ -90,6 +133,8 @@ const App: React.FC = () => {
         onStyleChange={handleStyleChange}
         onComplexityChange={handleComplexityChange}
         onShufflePalette={handleShufflePalette}
+        isAnimating={isAnimating}
+        onToggleAnimation={handleToggleAnimation}
       />
       <DebugPanel 
         state={generationState} 

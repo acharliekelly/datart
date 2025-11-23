@@ -12,6 +12,8 @@ interface ControlPanelProps {
   onStyleChange: (style: StyleId | null) => void;
   onComplexityChange: (value: number) => void;
   onShufflePalette: () => void;
+  isAnimating: boolean;
+  onToggleAnimation: () => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -23,7 +25,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onSeedChange,
   onStyleChange,
   onComplexityChange,
-  onShufflePalette
+  onShufflePalette,
+  isAnimating,
+  onToggleAnimation
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -193,10 +197,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   className="control-range"
                   value={complexityValue}
                   onChange={handleComplexityChange}
-                  disabled={mode !== "manual"}
+                  disabled={mode !== "manual" || isAnimating}
                 />
                 <span className="control-range-value">
-                  {complexityValue}
+                  {Math.round(complexityValue)}
                 </span>
                 <button
                   className="control-button"
@@ -207,6 +211,20 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
               <div className="control-hint">
                 Higher complexity &gt; more shapes. Shuffle to keep structure but change colors.
+              </div>
+            </div>
+
+            <div className="control-row" style={{ marginTop: "0.3rem" }}>
+              <span className="control-label">Animation</span>
+              <div className="control-value">
+                <label className="control-radio">
+                  <input
+                    type="checkbox"
+                    checked={isAnimating}
+                    onChange={onToggleAnimation}
+                  />
+                  <span>Animate complexity (0 &gt; 100 &gt; 0)</span>
+                </label>
               </div>
             </div>
           </div>
