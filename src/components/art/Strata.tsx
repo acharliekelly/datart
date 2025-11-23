@@ -2,13 +2,8 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps, StrataOptions } from "../../logic/types";
+import type { BaseArtProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
-
-/* ===========================================
- *  STYLE 2: STRATA
- * ===========================================
- */
 
 interface StrataBand {
   id: number;
@@ -19,10 +14,9 @@ interface StrataBand {
   opacity: number;
 }
 
-const StrataArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
-  const opts = (options ?? {}) as Partial<StrataOptions>;
-  const bandCount = opts.bandCount ?? 16;
-  const maxTilt = opts.maxTilt ?? 8;
+const StrataArt: React.FC<BaseArtProps> = ({ seed, palette, complexity }) => {
+  const bandCount = complexity ?? 16;
+  const maxTilt = complexity / 2;
   // use bandCount in place of the 10–20 count, and maxTilt for angle range
 
   const bands = useMemo<StrataBand[]>(() => {

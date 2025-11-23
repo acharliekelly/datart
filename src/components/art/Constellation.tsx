@@ -1,12 +1,8 @@
-/* ===========================================
- *  STYLE 3: CONSTELLATION
- * ===========================================
- */
 import React, {
   type CSSProperties,
   useMemo
 } from "react";
-import type { BaseArtProps, ConstellationOptions } from "../../logic/types";
+import type { BaseArtProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
 
 interface ConstellationPoint {
@@ -27,13 +23,15 @@ interface ConstellationLine {
 const ConstellationArt: React.FC<BaseArtProps> = ({
   seed,
   palette,
-  options,
+  complexity,
 }) => {
-  const opts = (options ?? {}) as Partial<ConstellationOptions>;
-  const pointCount = opts.pointCount ?? 24;
-  const connectionChance = opts.connectionChance ?? 0.6;
-  // use pointCount instead of fixed 18–29, connectionChance instead of 0.6
-
+  const pointCount = complexity ?? 24;
+  
+  // if complexity > 0, use complexity as %
+  const connectionChance = (complexity > 0 
+    ? complexity * 0.01 
+    : 0.6);
+  
   const { points, lines, background } = useMemo<{
     points: ConstellationPoint[];
     lines: ConstellationLine[];

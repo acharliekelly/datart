@@ -1,5 +1,5 @@
 import React, { type CSSProperties, useMemo } from "react";
-import type { BaseArtProps, BubblesOptions } from "../../logic/types";
+import type { BaseArtProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
 
 interface Bubble {
@@ -16,12 +16,10 @@ interface Bubble {
 export const BubblesArt: React.FC<BaseArtProps> = ({
   seed,
   palette,
-  options,
+  complexity,
 }) => {
-  const opts = (options ?? {}) as Partial<BubblesOptions>;
-
-  const bubbleCount = opts.bubbleCount ?? 26;
-  const spread = opts.spread ?? 220;
+  const bubbleCount = complexity ?? 26;
+  const spread = complexity * 10;
 
   const bubbles = useMemo<Bubble[]>(() => {
     const rng = makeRng(seed + 404);

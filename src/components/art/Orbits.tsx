@@ -2,7 +2,7 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps, OrbitsOptions } from "../../logic/types";
+import type { BaseArtProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
 
 /* ===========================================
@@ -20,33 +20,33 @@ interface OrbitShape {
   offsetY: number;
 }
 
-const OrbitArt: React.FC<BaseArtProps> = ({ seed, palette, options }) => {
-  const opts = (options ?? {}) as Partial<OrbitsOptions>;
-  const ringCount = opts.ringCount ?? 14;
-  const jitter = opts.jitter ?? 80;
-
-  // use ringCount & jitter instead of fixed values:
-  // const count = 10 + Math.floor(rng() * 10);
+const OrbitArt: React.FC<BaseArtProps> = ({ seed, palette, complexity }) => {
+  
   const shapes = useMemo<OrbitShape[]>(() => {
     const rng = makeRng(seed + 101);
-    const count =
-      ringCount + Math.floor((rng() - 0.5) * ringCount * 0.3); // ±30%
-    const finalCount = Math.max(5, count);
-    const circles: OrbitShape[] = [];
 
-    for (let i = 0; i < finalCount; i++) {
+    // complexity 0-100 >> ~5-40 rings
+    const minCount = 5;
+    const maxCount = 40;
+    const t = complexity / 100; // 0-1
+    const targetCount = Math.round(
+      minCount + t * (maxCount - minCount)
+    );
+
+    const circles: OrbitShape[] = [];
+    for (let i = 0; i < targetCount; i++) {
       circles.push({
         id: i,
-        size: 80 + rng() * 420,
+        size: 60 + rng() * 460,
         thickness: 1 + rng() * 6,
         color: palette[Math.floor(rng() * palette.length)],
         rotation: rng() * 360,
-        offsetX: (rng() - 0.5) * jitter,
-        offsetY: (rng() - 0.5) * jitter,
+        offsetX: (rng() - 0.5) * 100,
+        offsetY: (rng() - 0.5) * 100,
       });
     }
     return circles;
-  }, [seed, palette, ringCount, jitter]);
+  }, [seed, palette, complexity]);
 
   return (
     <div className="style-layer">

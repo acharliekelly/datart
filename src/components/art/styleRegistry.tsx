@@ -4,7 +4,10 @@ import ConstellationArt from "./Constellation";
 import BubblesArt from "./Bubbles";
 import type { ArtStyleProps } from "../../logic/types";
 
-export const STYLES = {
+export const STYLES: Record<
+  string,
+  { id: string; label: string; component: StyleComponent }
+> = {
   orbits: {
     id: "orbits",
     label: "Orbits",
