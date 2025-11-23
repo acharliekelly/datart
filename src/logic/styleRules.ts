@@ -2,20 +2,49 @@
 
 import type { StyleId, UserTraits } from "./types";
 
+export interface StyleDecision {
+  id: StyleId;
+  reason: string;
+}
 
-export function chooseStyle(traits: UserTraits, numericSeed: number): StyleId {
+function getDecision(styleId: StyleId, criterion: string): StyleDecision {
+  return {
+    id: styleId,
+    reason: `${criterion} => ${styleId}`
+  };
+}
+
+export function chooseStyle(
+  traits: UserTraits, 
+  numericSeed: number): StyleDecision {
   const isMobile = /Android|iPhone|iPad|iPod/i.test(traits.userAgent);
   const continent = traits.ipInfo?.continentCode ?? "";
+  const tz = traits.timeZone;
 
-  // continent-first mapping, then time zone, then fallback
-  if (continent === "NA") return "orbits";
-  if (continent === "EU") return "strata";
-  if (continent === "AS") return "constellation";
+  if (continent === "NA") {
+    return getDecision("orbits", "continent = NA");
+  }
+  if (continent === "EU") {
+    return getDecision("strata", "continent = EU");
+  }
+  if (continent === "AS") {
+    return getDecision("constellation", "continent = AS");
+  }
 
-  if (traits.timeZone.startsWith("America/")) return "orbits";
-  if (traits.timeZone.startsWith("Europe/")) return "strata";
-  if (isMobile) return "constellation";
+  if (tz.startsWith("America/")) {
+    return getDecision("orbits", `timezone ${tz} (America/*)`);
+  }
 
-  const styles: StyleId[] = ["orbits", "strata", "constellation"];
-  return styles[numericSeed % styles.length];
+  if (tz.startsWith("Europe/")) {
+    return getDecision("strata", `timezone ${tz} (Europe/*)`);
+  }
+
+  if (isMobile) {
+    return getDecision("bubbles", "mobile device");
+  }
+
+  const styles: StyleId[] = ["orbits", "strata", "constellation", "bubbles"];
+  const index = numericSeed % styles.length;
+  return getDecision(styles[index], 
+    `fallback: seed % ${styles.length} = ${index} => ${styles[index]}`);
 }

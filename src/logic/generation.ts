@@ -3,7 +3,6 @@
 import type {
   GenerationOptions,
   GenerationState,
-  StyleId,
   UserTraits
 } from "./types";
 import { buildFingerprint } from "./fingerprint";
@@ -11,6 +10,13 @@ import { hashStringToInt, makeRng } from "./rng";
 import { generatePalette } from "./palette";
 import { chooseStyle } from "./styleRules";
 
+function shiftPalette(palette: string[], shift: number): string[] {
+  if (!palette.length) return palette;
+  const n = palette.length;
+  const offset = ((shift % n) + n) %n;
+  if (offset === 0) return palette;
+  return [...palette.slice(offset), ...palette.slice(0, offset)];
+}
 
 /**
  * Given traits (browser + optional IP), compute:
@@ -26,31 +32,46 @@ export function buildGenerationState(
   const fingerprint = buildFingerprint(traits);
   const baseSeed = hashStringToInt(fingerprint);
 
-  // NEW: manualSeed is treated as a small "dial" (0-100),
-  // used to perturb the fingerprint before hashing
+  const complexity = options.complexity ?? 50;  // 0-100
+  const paletteShift = options.paletteShift ?? 0;
+
+  let seedSource: "auto" | "manualDial" = "auto";
+  let seedDial: number | null = null;
+
   let effectiveSeed = baseSeed;
 
   if (options.mode === "manual" && options.manualSeed != null) {
-    const dial = options.manualSeed;
-    const dialString = `${fingerprint}|dial:${dial}`;
+    seedSource = "manualDial";
+    seedDial = options.manualSeed;
+    const dialString = `${fingerprint}|dial:${seedDial}`;
     effectiveSeed = hashStringToInt(dialString);
   }
-
   
   const rngForPalette = makeRng(effectiveSeed);
-  const palette = generatePalette(rngForPalette);
-  const autoStyle = chooseStyle(traits, effectiveSeed);
-  const effectiveStyle: StyleId =
+  const rawPalette = generatePalette(rngForPalette);
+  const palette = shiftPalette(rawPalette, paletteShift);
+
+  const styleDecision = chooseStyle(traits, effectiveSeed);
+  const autoReason = styleDecision.reason;
+  const effectiveStyle =
     options.mode === "manual" && options.manualStyle
       ? options.manualStyle
-      : autoStyle;
+      : styleDecision.id;
 
   return {
     traits,
     fingerprint,
+    baseSeed,
     seed: effectiveSeed,
-    palette,
+    seedSource,
+    seedDial,
     styleId: effectiveStyle,
+    styleReason: options.mode === "manual" && options.manualStyle
+      ? `manual override >> ${effectiveStyle} (auto would be ${styleDecision})`
+      : autoReason,
+    palette,
+    paletteShift,
+    complexity,
   };
 }
 

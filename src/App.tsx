@@ -1,16 +1,19 @@
 import React, {
+  useEffect,
   useMemo,
   useState,
 } from "react";
+
 import type {
   Mode,
   StyleId,
   GenerationState,
+  GenerationOptions,
   UserTraits
 } from './logic/types';
 
-import { buildGenerationState } from './logic/generation';
-import { getBaseTraits } from "./logic/fingerprint";
+import { buildGenerationState, } from './logic/generation';
+import { getBaseTraits, applyIpInfo } from "./logic/fingerprint";
 import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
 import ArtContainer from "./components/ui/ArtContainer";
@@ -25,30 +28,50 @@ import "./App.css";
  */
 
 const App: React.FC = () => {
-  const baseTraits = useMemo<UserTraits>(() => getBaseTraits(), []);
+  // 1) traits
+  const [traits, setTraits] = useState<UserTraits>(() => getBaseTraits());
   
-  const { ipInfo, loading: ipLoading, error: ipError } = useIpInfo();
+  const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
 
-  const traits = useMemo<UserTraits>(() => {
-    if (!ipInfo) return baseTraits;
-    return { ...baseTraits, ipInfo };
-  }, [baseTraits, ipInfo]);
+  useEffect(() => {
+    if (!ipInfo) return;
+    setTraits((prev) => applyIpInfo(prev, ipInfo));
+  }, [ipInfo]);
 
-  const [mode, setMode] = useState<Mode>("auto");
-  const [manualSeed, setManualSeed] = useState<number | null>(null);
-  const [manualStyle, setManualStyle] = useState<StyleId | null>(null);
+  
+  // 2) options - SINGLE source of truth for mode
+  const [options, setOptions] = useState<GenerationOptions>({
+    mode: "auto",
+    manualSeed: null,
+    manualStyle: null,
+    complexity: 50,
+    paletteShift: 0,
+  });
 
-  const ipLoaded = !!ipInfo && !ipLoading;
-
+  // 3) derived generation state
   const generationState = useMemo<GenerationState>(
-    () =>
-      buildGenerationState(traits, {
-        mode,
-        manualSeed,
-        manualStyle
-      }),
-      [traits, mode, manualSeed, manualStyle]
+    () => buildGenerationState(traits, options),
+      [traits, options]
   );
+
+  // 4) handlers that only ever update "options"
+  const handleModeChange = (mode: Mode) =>
+    setOptions((prev) => ({ ...prev, mode }));
+
+  const handleSeedChange = (seed: number | null) => 
+    setOptions((prev) => ({ ...prev, manualSeed: seed }));
+
+  const handleStyleChange = (style: StyleId | null) =>
+    setOptions((prev) => ({ ...prev, manualStyle: style }));
+
+  const handleComplexityChange = (value: number) =>
+    setOptions((prev) => ({ ...prev, complexity: value }));
+
+  const handleShufflePalette = () => 
+    setOptions((prev) => ({
+      ...prev,
+      paletteShift: (prev.paletteShift ?? 0) + 1,
+    }));
 
 
   return (
@@ -58,17 +81,20 @@ const App: React.FC = () => {
         datart · {generationState.styleId} · client-side generative
       </div>
       <ControlPanel
-        mode={mode}
-        manualSeed={manualSeed}
-        manualStyle={manualStyle}
-        onModeChange={setMode}
-        onSeedChange={setManualSeed}
-        onStyleChange={setManualStyle}
+        mode={options.mode}
+        manualSeed={options.manualSeed ?? null}
+        manualStyle={options.manualStyle ?? null}
+        complexity={options.complexity ?? 50}
+        onModeChange={handleModeChange}
+        onSeedChange={handleSeedChange}
+        onStyleChange={handleStyleChange}
+        onComplexityChange={handleComplexityChange}
+        onShufflePalette={handleShufflePalette}
       />
       <DebugPanel 
         state={generationState} 
         ipLoaded={ipLoaded}
-        mode={mode} 
+        mode={options.mode} 
         ipError={ipError}
       />
     </div>

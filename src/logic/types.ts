@@ -39,6 +39,7 @@ export interface AllStyleOptions {
 export interface BaseArtProps {
   seed: number;
   palette: string[];
+  complexity: number;
   options?: unknown;
 }
 
@@ -72,18 +73,32 @@ export interface UserTraits {
 export interface ArtStyleProps {
   seed: number;
   palette: string[];
+  complexity: number;
 }
 
 export interface GenerationState {
   traits: UserTraits;
   fingerprint: string;
-  seed: number;
+
+  // seed internals for transparency
+  baseSeed: number;
+  seed: number; // effective seed used for RNG
+  seedSource: "auto" | "manualDial";
+  seedDial: number | null;
+  
   palette: string[];
+  paletteShift: number;
+
   styleId: StyleId;
+  styleReason: string;
+
+  complexity: number; // 0-100
 }
 
 export interface GenerationOptions {
   mode: Mode;
   manualSeed?: number | null;
   manualStyle?: StyleId | null;
+  complexity?: number;  // 0-100
+  paletteShift?: number;  // integer, used for palette shuffling
 }
