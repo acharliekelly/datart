@@ -45,14 +45,48 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
               <span className="debug-label">Mode</span>
               <span className="debug-value">{mode}</span>
             </div>
+
+            <div className="debug-row">
+              <span className="debug-label">Seed source</span>
+              <span className="debug-value">{state.seedSource}</span>
+            </div>
+            <div className="debug-row">
+              <span className="debug-label">Base seed</span>
+              <span className="debug-value">{state.baseSeed}</span>
+            </div>
+            <div className="debug-row">
+              <span className="debug-label">Effective seed</span>
+              <span className="debug-value">{state.seed}</span>
+            </div>
+            {state.seedSource === "manualDial" && (
+              <div className="debug-row">
+                <span className="debug-label">Seed </span>
+              </div>
+            )}
+            <div className="debug-row">
+              <span className="debug-label">Complexity</span>
+              <span className="debug-value">{state.complexity}</span>
+            </div>
+            <div className="debug-row">
+              <span className="debug-label">Palette shift</span>
+              <span className="debug-value">
+                {state.paletteShift}
+              </span>
+            </div>
+          </div>
+          <div className="debug-section">
             <div className="debug-row">
               <span className="debug-label">Style</span>
               <span className="debug-value">{state.styleId}</span>
             </div>
-            <div className="debug-row">
-              <span className="debug-label">Seed</span>
-              <span className="debug-value">{state.seed}</span>
-            </div>
+            {state.styleReason && (
+              <div className="debug-row">
+                <span className="debug-label">Style reason</span>
+                <span className="debug-value">
+                  {state.styleReason}
+                </span>
+              </div>
+            )}
             <div className="debug-row">
               <span className="debug-label">IP loaded</span>
               <span className="debug-value">
