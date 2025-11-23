@@ -6,20 +6,24 @@ interface ControlPanelProps {
   mode: Mode;
   manualSeed: number | null;
   manualStyle: StyleId | null;
+  complexity: number;
   onModeChange: (mode: Mode) => void;
   onSeedChange: (seed: number | null) => void;
   onStyleChange: (style: StyleId | null) => void;
-  onComplexityChange: (shapeCount: number | null) => void;
+  onComplexityChange: (value: number) => void;
+  onShufflePalette: () => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
   mode,
   manualSeed,
   manualStyle,
+  complexity,
   onModeChange,
   onSeedChange,
   onStyleChange,
   onComplexityChange,
+  onShufflePalette
 }) => {
   const [open, setOpen] = useState(true);
 
@@ -36,6 +40,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     onSeedChange(value);
   };
 
+  const complexityValue = complexity;
+
+  const handleComplexityChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(event.target.value);
+    if (!Number.isNaN(value)) {
+      onComplexityChange(value);
+    }
+  };
+
   const handleRandomize = () => {
     const randomDial = Math.floor(Math.random() * 101); // 0–100
     onSeedChange(randomDial);
@@ -43,17 +56,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       onModeChange("manual");
     }
   };
-
-  const handleComplexityChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = Number(event.target.value);
-    if (Number.isNaN(value)) {
-      onComplexityChange(null);
-      return;
-    }
-    onComplexityChange(value);
-  }
 
   const handleStyleChange = (
     event: ChangeEvent<HTMLSelectElement>
@@ -149,7 +151,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           {/* Seed dial */}
           <div className="control-section">
             <div className="control-row">
-              <span className="control-label">Seed dial</span>
+              <span className="control-label">Seed</span>
               <div className="control-value control-seed-row">
                 <input
                   type="range"
@@ -181,26 +183,34 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           {/* Complexity dial */}
           <div className="control-section">
             <div className="control-row">
-              <span className="control-label">Complexity dial</span>
-              <div className="control-value">
+              <span className="control-label">Complexity</span>
+              <div className="control-value control-seed-row">
                 <input
                   type="range"
-                  min={1}
+                  min={0}
                   max={100}
                   step={1}
                   className="control-range"
-                  value={dialValue}
+                  value={complexityValue}
                   onChange={handleComplexityChange}
                   disabled={mode !== "manual"}
                 />
+                <span className="control-range-value">
+                  {complexityValue}
+                </span>
+                <button
+                  className="control-button"
+                  onClick={onShufflePalette}
+                >
+                  Shuffle Palette
+                </button>
               </div>
-            </div>
-            <div className="control-hint">
-              In manual mode, this dial adjusts the number of shapes.
+              <div className="control-hint">
+                Higher complexity &gt; more shapes. Shuffle to keep structure but change colors.
+              </div>
             </div>
           </div>
 
-         
         </div>
       )}
     </div>
