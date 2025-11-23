@@ -2,8 +2,9 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps } from "../../logic/types";
+import type { ArtStyleProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
+import { clamp, lerp } from "../../logic/styleUtils";
 
 /* ===========================================
  *  STYLE 1: ORBITS
@@ -20,29 +21,28 @@ interface OrbitShape {
   offsetY: number;
 }
 
-const OrbitArt: React.FC<BaseArtProps> = ({ seed, palette, complexity }) => {
+const OrbitArt: React.FC<ArtStyleProps> = ({ seed, palette, complexity }) => {
   
   const shapes = useMemo<OrbitShape[]>(() => {
     const rng = makeRng(seed + 101);
+    const plex = clamp(complexity / 100);
 
-    // complexity 0-100 >> ~5-40 rings
-    const minCount = 5;
-    const maxCount = 40;
-    const t = complexity / 100; // 0-1
-    const targetCount = Math.round(
-      minCount + t * (maxCount - minCount)
-    );
+    // density: number of rings
+    const ringCount = Math.round(lerp(6, 30, plex));
+
+    // chaos: how far orbits can drift from center
+    const maxOffset = lerp(20, 120, Math.pow(plex, 1.2));
 
     const circles: OrbitShape[] = [];
-    for (let i = 0; i < targetCount; i++) {
+    for (let i = 0; i < ringCount; i++) {
       circles.push({
         id: i,
-        size: 60 + rng() * 460,
+        size: 80 + rng() * 420,
         thickness: 1 + rng() * 6,
         color: palette[Math.floor(rng() * palette.length)],
         rotation: rng() * 360,
-        offsetX: (rng() - 0.5) * 100,
-        offsetY: (rng() - 0.5) * 100,
+        offsetX: (rng() - 0.5) * maxOffset,
+        offsetY: (rng() - 0.5) * maxOffset,
       });
     }
     return circles;

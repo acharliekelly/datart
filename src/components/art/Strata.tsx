@@ -2,8 +2,9 @@ import React, {
   type CSSProperties,
   useMemo,
 } from "react";
-import type { BaseArtProps } from "../../logic/types";
+import type { ArtStyleProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
+import { clamp, lerp } from "../../logic/styleUtils";
 
 interface StrataBand {
   id: number;
@@ -14,34 +15,57 @@ interface StrataBand {
   opacity: number;
 }
 
-const StrataArt: React.FC<BaseArtProps> = ({ seed, palette, complexity }) => {
-  const bandCount = complexity ?? 16;
-  const maxTilt = complexity / 2;
-  // use bandCount in place of the 10–20 count, and maxTilt for angle range
-
-  const bands = useMemo<StrataBand[]>(() => {
+const StrataArt: React.FC<ArtStyleProps> = ({ seed, palette, complexity }) => {
+  const { bands, backgroundGradient } = useMemo(() => {
     const rng = makeRng(seed + 202);
+    const plex = clamp(complexity / 100);
+
+    // map complexity to band count
+    const minBands = 6;
+    const maxBands = 26;
+    const bandCount = Math.round(lerp(minBands, maxBands, plex));
+
+    // thickness: thick bands at low complexity, thinner at high
+    const minThickness = 14;
+    const maxThickness = 80;
+    // invert plex so low complexity >> closer to maxThickness
+    const thicknessBase = lerp(maxThickness, minThickness, plex);
+
+    // tilt: subtle at low complexity, wilder at high, with soft curve
+    const maxTiltDeg = lerp(2, 14, Math.pow(plex, 1.2));  // non-linear so it doesn't explode
+
     const list: StrataBand[] = [];
 
     for (let i = 0; i < bandCount; i++) {
+      const thicknessJitter = (rng() - 0.5) * 0.4 * thicknessBase; // +/- 20%
+      const thickness = Math.max(6, thicknessBase + thicknessJitter);
+
+      const top = rng() * 100;
+      const angle = (rng() - 0.5) * 2 * maxTiltDeg;
+      const color = palette[Math.floor(rng() * palette.length)];
+
+      // more overlap / opacity variation at higher complexity
+      const minOpacity = lerp(0.15, 0.25, plex);
+      const maxOpacity = lerp(0.5, 0.85, plex);
+      const opacity = minOpacity + rng() * (maxOpacity - minOpacity);
+
       list.push({
         id: i,
-        thickness: 10 + rng() * 80, // px
-        top: rng() * 100, // vh
-        angle: (rng() - 0.5) * maxTilt, // -6 to +6 deg
-        color: palette[Math.floor(rng() * palette.length)],
-        opacity: 0.2 + rng() * 0.7,
+        thickness,
+        top,
+        angle,
+        color,
+        opacity,
       });
     }
-    return list;
-  }, [seed, palette, bandCount, maxTilt]);
 
-  const backgroundGradient = useMemo<string>(() => {
     const stops = palette
       .map((c, idx) => `${c} ${idx * (100 / palette.length)}%`)
       .join(", ");
-    return `linear-gradient(135deg, ${stops})`;
-  }, [palette]);
+    const backgroundGradient = `linear-gradient(135deg, ${stops})`;
+
+    return { bands: list, backgroundGradient };
+  }, [seed, palette, complexity]);
 
   return (
     <div

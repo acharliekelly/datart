@@ -2,8 +2,9 @@ import React, {
   type CSSProperties,
   useMemo
 } from "react";
-import type { BaseArtProps } from "../../logic/types";
+import type { ArtStyleProps } from "../../logic/types";
 import { makeRng } from "../../logic/rng";
+import { clamp, lerp } from "../../logic/styleUtils";
 
 interface ConstellationPoint {
   id: number;
@@ -20,27 +21,25 @@ interface ConstellationLine {
   b: ConstellationPoint;
 }
 
-const ConstellationArt: React.FC<BaseArtProps> = ({
+const ConstellationArt: React.FC<ArtStyleProps> = ({
   seed,
   palette,
   complexity,
 }) => {
-  const pointCount = complexity ?? 24;
-  
-  // if complexity > 0, use complexity as %
-  const connectionChance = (complexity > 0 
-    ? complexity * 0.01 
-    : 0.6);
-  
-  const { points, lines, background } = useMemo<{
-    points: ConstellationPoint[];
-    lines: ConstellationLine[];
-    background: string;
-  }>(() => {
+  const { points, lines, background } = useMemo(() => {
     const rng = makeRng(seed + 303);
-    const pts: ConstellationPoint[] = [];
+    const plex = clamp(complexity / 100);
+  
+    // star count
+    const minStars = 10;
+    const maxStars = 40;
+    const starCount = Math.round(lerp(minStars, maxStars, plex));
 
-    for (let i = 0; i < pointCount; i++) {
+    // connection density: low complexity = sparse, high = webby
+    const baseConnectProb = lerp(0.25, 0.7, plex);
+
+    const pts: ConstellationPoint[] = [];
+    for (let i = 0; i < starCount; i++) {
       pts.push({
         id: i,
         x: rng() * 100, // vw
@@ -52,10 +51,10 @@ const ConstellationArt: React.FC<BaseArtProps> = ({
     }
 
     const ln: ConstellationLine[] = [];
-    for (let i = 0; i < pointCount - 1; i++) {
-      if (rng() < connectionChance) {
+    for (let i = 0; i < starCount - 1; i++) {
+      if (rng() < baseConnectProb) {
         const j = i + 1 + Math.floor(rng() * 3);
-        if (j < pointCount) {
+        if (j < starCount) {
           ln.push({ id: `${i}-${j}`, a: pts[i], b: pts[j] });
         }
       }
@@ -64,7 +63,7 @@ const ConstellationArt: React.FC<BaseArtProps> = ({
     const bg = `radial-gradient(circle at 50% 10%, rgba(255,255,255,0.12), transparent 60%), radial-gradient(circle at 20% 80%, rgba(255,255,255,0.08), transparent 55%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15), transparent 50%), #020617`;
 
     return { points: pts, lines: ln, background: bg };
-  }, [seed, palette, pointCount, connectionChance]);
+  }, [seed, palette, complexity]);
 
   return (
     <div

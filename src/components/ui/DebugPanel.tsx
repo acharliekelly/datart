@@ -21,11 +21,10 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipError
 }) => {
   const [open, setOpen] = useState(true);
+  const ip = state.traits.ipInfo;
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
-
-  const ip = state.traits.ipInfo;
 
   return (
     <div className="debug-panel">
@@ -116,9 +115,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             </div>
             <div className="debug-row">
               <span className="debug-label">Fingerprint</span>
-              <span className="debug-value">
+              <div className="debug-value">
                 {short(state.fingerprint)}
-              </span>
+              </div>
             </div>
           </div>
 
@@ -154,6 +153,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             </div>
           )}
 
+          {/* Palette */}
           <div className="debug-section">
             <div className="debug-row">
               <span className="debug-label">Palette</span>
@@ -168,7 +168,63 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
                 ))}
               </span>
             </div>
-          </div>
+          </div>  
+
+          {/* Explanation section */}
+          <div className="debug-section">
+            <div className="debug-row">
+                <span className="debug-label">Explain this Art</span>
+                <span className="debug-value"></span>
+            </div>
+            <ul className="debug-list">
+              <li className="debug-list-item">
+                <strong>Fingerprint &gt; base seed:</strong>{" "}
+                We hash your browser/IP traits into a fingerprint, then into{" "}
+                <code>{state.baseSeed}</code>.
+              </li>
+
+              <li className="debug-list-item">
+                <strong>Effective seed:</strong>{" "}
+                {state.seedSource === "manualDial" ? (
+                  <>
+                    Manual mode is on; seed dial <code>{state.seedDial}</code>{" "}
+                    perturbs the fingerprint to produce{" "}
+                    <code>{state.seed}</code>.
+                  </>
+                ) : (
+                  <>
+                    Auto mode uses the base seed directly as{" "}
+                    <code>{state.seed}</code>.
+                  </>
+                )}
+              </li>
+
+              <li className="debug-list-item">
+                <strong>Style:</strong>{" "}
+                <code>{state.styleId}</code>
+                {state.styleReason ? (
+                  <>
+                    {" "}
+                    &gt; {state.styleReason}
+                  </>
+                ) : null}
+              </li>
+
+              <li className="debug-list-item">
+                <strong>Complexity:</strong>{" "}
+                <code>{state.complexity}</code>{" "}
+                (higher = more rings / bands / stars, depending on style)
+              </li>
+
+              <li className="debug-list-item">
+                <strong>Palette:</strong>{" "}
+                base palette from the seed, rotated by{" "}
+                <code>{state.paletteShift}</code> step 
+                {state.paletteShift === 1 ? "" : "s"}.
+              </li>
+            </ul>
+
+          </div>  
         </div>
       )}
     </div>

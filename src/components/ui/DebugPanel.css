@@ -77,3 +77,20 @@
   border-radius: 0.35rem;
   border: 1px solid rgba(15, 23, 42, 0.7);
 }
+
+.debug-list {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.debug-list-item {
+  margin: 0.1rem 0;
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.debug-list-item code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.7rem;
+}
