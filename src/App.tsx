@@ -19,6 +19,7 @@ import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
 import ArtContainer from "./components/ui/ArtContainer";
 import { useIpInfo } from "./hooks/useIpInfo";
+import { useIsMobile } from "./hooks/useIsMobile";
 import "./App.css";
 
 
@@ -29,6 +30,7 @@ const App: React.FC = () => {
   const complexityDirectionRef = useRef<1 | -1>(1);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
+  const isMobile = useIsMobile();
 
   // 2) options - SINGLE source of truth for mode
   const [options, setOptions] = useState<GenerationOptions>({
@@ -81,6 +83,7 @@ const App: React.FC = () => {
     frameId = requestAnimationFrame(step);
 
     if (ipInfo) {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       setTraits((prev) => applyIpInfo(prev, ipInfo));
     }
 
@@ -135,12 +138,14 @@ const App: React.FC = () => {
         onShufflePalette={handleShufflePalette}
         isAnimating={isAnimating}
         onToggleAnimation={handleToggleAnimation}
+        isMobile={isMobile}
       />
       <DebugPanel 
         state={generationState} 
         ipLoaded={ipLoaded}
         mode={options.mode} 
         ipError={ipError}
+        isMobile={isMobile}
       />
     </div>
   );
