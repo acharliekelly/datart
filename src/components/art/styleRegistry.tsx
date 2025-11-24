@@ -1,3 +1,4 @@
+import type { ArtStyleProps } from "../../logic/types";
 import OrbitArt from "./OrbitArt";
 import StrataArt from "./StrataArt";
 import ConstellationArt from "./ConstellationArt";
@@ -13,7 +14,7 @@ import VoronoiBloomArt from "./VoronoiBloomArt";
 import FernArt from "./FernArt";
 import KochSnowflakeArt from "./KochSnowflakeArt";
 import RecursiveTreeArt from "./RecursiveTreeArt";
-import type { ArtStyleProps } from "../../logic/types";
+import FlowFieldArt from "./FlowFieldArt";
 
 export const STYLES: Record<
   string,
@@ -93,6 +94,11 @@ export const STYLES: Record<
     id: "tree",
     label: "Recursive Tree",
     component: RecursiveTreeArt,
+  },
+  flowfield: {
+    id: "flowfield",
+    label: "Flow Field",
+    component: FlowFieldArt,
   },
 } as const;
 
