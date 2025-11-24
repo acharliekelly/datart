@@ -7,6 +7,7 @@ import SupershapeArt from "./SupershapeArt";
 import IsoGridArt from "./IsoGridArt";
 import CrystalArt from "./CrystalArt";
 import LatticeArt from "./LatticeArt";
+import NebulaArt from "./NebulaArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -57,6 +58,11 @@ export const STYLES: Record<
     id: "lattice",
     label: "Lattice",
     component: LatticeArt,
+  },
+  nebula: {
+    id: "nebula",
+    label: "Nebula",
+    component: NebulaArt,
   },
 } as const;
 
