@@ -2,6 +2,7 @@ import OrbitArt from "./Orbits";
 import StrataArt from "./Strata";
 import ConstellationArt from "./Constellation";
 import BubblesArt from "./Bubbles";
+import WaveArt from "./Wave";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -27,6 +28,11 @@ export const STYLES: Record<
     id: "bubbles",
     label: "Bubbles",
     component: BubblesArt,
+  },
+  waves: {
+    id: "waves",
+    label: "Waves",
+    component: WaveArt,
   },
 } as const;
 
