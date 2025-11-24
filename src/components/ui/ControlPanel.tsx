@@ -85,7 +85,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       value === "nebula" ||
       value === "aurora" ||
       value === "voronoi" ||
-      value === "fern"
+      value === "fern" ||
+      value === "koch"
     ) {
       onStyleChange(value);
     } else {
@@ -161,6 +162,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <option value="aurora">Aurora</option>
                   <option value="voronoi">Voronoi Bloom</option>
                   <option value="fern">Fractal Fern</option>
+                  <option value="koch">Koch Snowflake</option>
                 </select>
               </div>
               <div className="control-hint">
