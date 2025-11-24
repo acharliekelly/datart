@@ -81,7 +81,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       value === "supershape" ||
       value === "isogrid" ||
       value === "crystal" ||
-      value === "lattice"
+      value === "lattice" ||
+      value === "nebula"
     ) {
       onStyleChange(value);
     } else {
@@ -153,6 +154,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <option value="isogrid">IsoGrid</option>
                   <option value="crystal">Crystal</option>
                   <option value="lattice">Lattice</option>
+                  <option value="nebula">Nebula</option>
                 </select>
               </div>
               <div className="control-hint">
