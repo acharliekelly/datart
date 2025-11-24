@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
+import { useIsDev } from "../../hooks/useIsDev";
 import './DebugPanel.css';
 
 /* ===========================================
@@ -22,12 +23,15 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 }) => {
   const [open, setOpen] = useState(true);
   const ip = state.traits.ipInfo;
+  const isDev = useIsDev();
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
 
+  const panelCls = 'debug-panel' + (isDev && ' dev-mode');
+
   return (
-    <div className="debug-panel">
+    <div className={panelCls}>
       <button
         className="debug-toggle"
         onClick={() => setOpen((o) => !o)}
@@ -37,7 +41,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 
       {open && (
         <div className="debug-body">
-          <h2 className="debug-title">Generation debug</h2>
+          <h2 className="debug-title">Generation Debug</h2>
           
           <div className="debug-section">
             <div className="debug-row">

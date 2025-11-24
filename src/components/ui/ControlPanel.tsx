@@ -1,5 +1,6 @@
 import React, { useState, type ChangeEvent } from "react";
 import type { Mode, StyleId } from "../../logic/types";
+import { useIsDev } from "../../hooks/useIsDev";
 import "./ControlPanel.css";
 
 interface ControlPanelProps {
@@ -30,6 +31,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onToggleAnimation
 }) => {
   const [open, setOpen] = useState(true);
+
+  const isDev = useIsDev();
 
   const dialValue = manualSeed ?? 50; // 0–100 dial
 
@@ -97,8 +100,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     }
   };
 
+  const panelCls = 'control-panel' + (isDev && ' dev-mode');
+
   return (
-    <div className="control-panel">
+    <div className={panelCls}>
       <button
         className="control-toggle"
         onClick={() => setOpen((o) => !o)}
