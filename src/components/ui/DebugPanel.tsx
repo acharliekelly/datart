@@ -57,14 +57,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
               <span className="debug-label">Effective seed</span>
               <span className="debug-value">{state.seed}</span>
             </div>
-            {state.seedSource === "manualDial" && (
-              <div className="debug-row">
-                <span className="debug-label">Seed </span>
-              </div>
-            )}
             <div className="debug-row">
               <span className="debug-label">Complexity</span>
-              <span className="debug-value">{state.complexity}</span>
+              <span className="debug-value">{Math.round(state.complexity)}</span>
             </div>
             <div className="debug-row">
               <span className="debug-label">Palette shift</span>
@@ -89,7 +84,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             <div className="debug-row">
               <span className="debug-label">IP loaded</span>
               <span className="debug-value">
-                {ipLoaded ? "yes" : "no (browser-only)"}
+                {ipLoaded ? "yes" : "no"}
               </span>
             </div>
           </div>
@@ -212,7 +207,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 
               <li className="debug-list-item">
                 <strong>Complexity:</strong>{" "}
-                <code>{state.complexity}</code>{" "}
+                <code>{Math.round(state.complexity)}</code>{" "}
                 (higher = more rings / bands / stars, depending on style)
               </li>
 
