@@ -9,6 +9,7 @@ import CrystalArt from "./CrystalArt";
 import LatticeArt from "./LatticeArt";
 import NebulaArt from "./NebulaArt";
 import AuroraArt from "./AuroraArt";
+import VoronoiBloomArt from "./VoronoiBloomArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -69,6 +70,11 @@ export const STYLES: Record<
     id: "aurora",
     label: "Aurora",
     component: AuroraArt,
+  },
+  voronoi: {
+    id: "voronoi",
+    label: "Voronoi Bloom",
+    component: VoronoiBloomArt,
   },
 } as const;
 
