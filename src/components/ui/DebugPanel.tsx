@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import './DebugPanel.css';
@@ -13,20 +13,27 @@ interface DebugPanelProps {
   ipLoaded: boolean;
   mode: Mode;
   ipError?: string | null;
+  isMobile?: boolean;
 }
 
 const DebugPanel: React.FC<DebugPanelProps> = ({
   state,
   ipLoaded,
   mode,
-  ipError
+  ipError,
+  isMobile
 }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => !isMobile);
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setOpen(!isMobile);
+  }, [isMobile]);
 
   const panelCls = 'debug-panel' + (isDev && ' dev-mode');
 
