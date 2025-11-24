@@ -12,6 +12,7 @@ import AuroraArt from "./AuroraArt";
 import VoronoiBloomArt from "./VoronoiBloomArt";
 import FernArt from "./FernArt";
 import KochSnowflakeArt from "./KochSnowflakeArt";
+import RecursiveTreeArt from "./RecursiveTreeArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -87,6 +88,11 @@ export const STYLES: Record<
     id: "koch",
     label: "Koch Snowflake",
     component: KochSnowflakeArt,
+  },
+  tree: {
+    id: "tree",
+    label: "Recursive Tree",
+    component: RecursiveTreeArt,
   },
 } as const;
 
