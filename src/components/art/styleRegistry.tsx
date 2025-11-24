@@ -8,6 +8,7 @@ import IsoGridArt from "./IsoGridArt";
 import CrystalArt from "./CrystalArt";
 import LatticeArt from "./LatticeArt";
 import NebulaArt from "./NebulaArt";
+import AuroraArt from "./AuroraArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -63,6 +64,11 @@ export const STYLES: Record<
     id: "nebula",
     label: "Nebula",
     component: NebulaArt,
+  },
+  aurora: {
+    id: "aurora",
+    label: "Aurora",
+    component: AuroraArt,
   },
 } as const;
 
