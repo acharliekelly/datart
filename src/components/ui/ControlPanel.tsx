@@ -103,124 +103,122 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   if (isMobile) {
     return (
       <>
-      <button 
-        className={toggleClasses} 
-        onClick={() => setOpen((o) => !o)}
-      >
-        <span className="panel-toggle__dot" />
-        <span>{toggleLabel}</span>
-      </button>
-      <div className="control-panel control-panel--mobile">
-      {open && (
-      <>
-        <div className="control-header">
-          <span className="control-title">Controls</span>
-        </div>
-        <div className="control-section">
-          <div className="control-row">
-            <span className="control-label">Mode</span>
-            <div className="control-value">
-              <label className="control-radio">
+        <button 
+          className={toggleClasses} 
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span className="panel-toggle__dot" />
+          <span>{toggleLabel}</span>
+        </button>
+        {open && (
+        <div className="control-panel control-panel--mobile">
+          <div className="control-header">
+            <span className="control-title">Controls</span>
+          </div>
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Mode</span>
+              <div className="control-value">
+                <label className="control-radio">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="auto"
+                    checked={mode === "auto"}
+                    onChange={() => onModeChange("auto")}
+                  />
+                  <span>Auto</span>
+                </label>
+                <label className="control-radio">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="manual"
+                    checked={mode === "manual"}
+                    onChange={() => onModeChange("manual")}
+                  />
+                  <span>Manual</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Style Gallery (mobile) */}
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Style</span>
+            </div>
+            <div className="style-gallery">
+              {STYLE_OPTIONS.map((opt) => {
+                const isSelected =
+                  opt.id === null
+                    ? mode === "auto" && manualStyle == null
+                    : mode === "manual" && manualStyle === opt.id;
+
+                const className = "style-chip" + (isSelected ? " style-chip--selected" : "");
+
+                return (
+                  <button
+                    key={opt.id ?? "auto"}
+                    className={className}
+                    type="button"
+                    onClick={() => {
+                      if (opt.id === null) {
+                        // auto style selection
+                        onModeChange("auto");
+                        onStyleChange(null);
+                      } else {
+                        onModeChange("manual");
+                        onStyleChange(opt.id);
+                      }
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Complexity (mobile) */}
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Complexity</span>
+              <div className="control-value control-seed-row">
                 <input
-                  type="radio"
-                  name="mode"
-                  value="auto"
-                  checked={mode === "auto"}
-                  onChange={() => onModeChange("auto")}
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="control-range"
+                  value={complexity}
+                  disabled={mode !== "manual"}
+                  onChange={(e) =>
+                    onComplexityChange(Number(e.target.value))
+                  }
                 />
-                <span>Auto</span>
-              </label>
-              <label className="control-radio">
-                <input
-                  type="radio"
-                  name="mode"
-                  value="manual"
-                  checked={mode === "manual"}
-                  onChange={() => onModeChange("manual")}
-                />
-                <span>Manual</span>
-              </label>
+                <span className="control-range-value">
+                  {Math.round(complexity)}
+                </span>
+              </div>
+            </div>
+            <div className="control-row" style={{ marginTop: "0.25rem" }}>
+              <span className="control-label">Animation</span>
+              <div className="control-value">
+                <label className="control-radio">
+                  <input
+                    type="checkbox"
+                    checked={isAnimating}
+                    onChange={onToggleAnimation}
+                  />
+                  <span>Animate Complexity</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Style Gallery (mobile) */}
-        <div className="control-section">
-          <div className="control-row">
-            <span className="control-label">Style</span>
-          </div>
-          <div className="style-gallery">
-            {STYLE_OPTIONS.map((opt) => {
-              const isSelected =
-                opt.id === null
-                  ? mode === "auto" && manualStyle == null
-                  : mode === "manual" && manualStyle === opt.id;
-
-              const className = "style-chip" + (isSelected ? " style-chip--selected" : "");
-
-              return (
-                <button
-                  key={opt.id ?? "auto"}
-                  className={className}
-                  type="button"
-                  onClick={() => {
-                    if (opt.id === null) {
-                      // auto style selection
-                      onModeChange("auto");
-                      onStyleChange(null);
-                    } else {
-                      onModeChange("manual");
-                      onStyleChange(opt.id);
-                    }
-                  }}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Complexity (mobile) */}
-        <div className="control-section">
-          <div className="control-row">
-            <span className="control-label">Complexity</span>
-            <div className="control-value control-seed-row">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                className="control-range"
-                value={complexity}
-                disabled={mode !== "manual"}
-                onChange={(e) =>
-                  onComplexityChange(Number(e.target.value))
-                }
-              />
-              <span className="control-range-value">
-                {Math.round(complexity)}
-              </span>
-            </div>
-          </div>
-          <div className="control-row" style={{ marginTop: "0.25rem" }}>
-            <span className="control-label">Animation</span>
-            <div className="control-value">
-              <label className="control-radio">
-                <input
-                  type="checkbox"
-                  checked={isAnimating}
-                  onChange={onToggleAnimation}
-                />
-                <span>Animate Complexity</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </>
-      )}
-    </div>
-  </>
+        )}
+    </>
   )}
     
 
