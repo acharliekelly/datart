@@ -11,6 +11,7 @@ import NebulaArt from "./NebulaArt";
 import AuroraArt from "./AuroraArt";
 import VoronoiBloomArt from "./VoronoiBloomArt";
 import FernArt from "./FernArt";
+import KochSnowflakeArt from "./KochSnowflakeArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -81,6 +82,11 @@ export const STYLES: Record<
     id: "fern",
     label: "Fractal Fern",
     component: FernArt,
+  },
+  koch: {
+    id: "koch",
+    label: "Koch Snowflake",
+    component: KochSnowflakeArt,
   },
 } as const;
 
