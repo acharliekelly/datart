@@ -10,6 +10,7 @@ import LatticeArt from "./LatticeArt";
 import NebulaArt from "./NebulaArt";
 import AuroraArt from "./AuroraArt";
 import VoronoiBloomArt from "./VoronoiBloomArt";
+import FernArt from "./FernArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -75,6 +76,11 @@ export const STYLES: Record<
     id: "voronoi",
     label: "Voronoi Bloom",
     component: VoronoiBloomArt,
+  },
+  fern: {
+    id: "fern",
+    label: "Fractal Fern",
+    component: FernArt,
   },
 } as const;
 
