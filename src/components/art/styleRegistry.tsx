@@ -6,6 +6,7 @@ import WaveArt from "./WaveArt";
 import SupershapeArt from "./SupershapeArt";
 import IsoGridArt from "./IsoGridArt";
 import CrystalArt from "./CrystalArt";
+import LatticeArt from "./LatticeArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -51,6 +52,11 @@ export const STYLES: Record<
     id: "crystal",
     label: "Crystal",
     component: CrystalArt,
+  },
+  lattice: {
+    id: "lattice",
+    label: "Lattice",
+    component: LatticeArt,
   },
 } as const;
 
