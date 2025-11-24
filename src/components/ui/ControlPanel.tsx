@@ -77,7 +77,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       value === "strata" ||
       value === "constellation" ||
       value === "bubbles" ||
-      value === "waves"
+      value === "waves" ||
+      value === "supershape"
     ) {
       onStyleChange(value);
     } else {
@@ -145,6 +146,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <option value="constellation">Constellation</option>
                   <option value="bubbles">Bubbles</option>
                   <option value="waves">Waves</option>
+                  <option value="supershape">Supershape Stars</option>
                 </select>
               </div>
               <div className="control-hint">

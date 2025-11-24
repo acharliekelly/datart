@@ -3,6 +3,7 @@ import StrataArt from "./Strata";
 import ConstellationArt from "./Constellation";
 import BubblesArt from "./Bubbles";
 import WaveArt from "./Wave";
+import SupershapeArt from "./Supershape";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -33,6 +34,11 @@ export const STYLES: Record<
     id: "waves",
     label: "Waves",
     component: WaveArt,
+  },
+  supershape: {
+    id: "supershape",
+    label: "Supershape Stars",
+    component: SupershapeArt,
   },
 } as const;
 
