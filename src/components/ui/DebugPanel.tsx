@@ -47,7 +47,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
       </button>
 
       {open && (
-        <div className="panel-body">
+        <div className="debug-panel debug-panel--floating debug-body">
           <h2 className="panel-title">Generation Debug</h2>
           
           <div className="panel-section">

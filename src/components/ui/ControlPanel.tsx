@@ -236,7 +236,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </button>
 
       {open && (
-        <div className="panel-body">
+        <div className="control-panel panel-body">
           <h2 className="panel-title">Controls</h2>
 
           {/* Mode */}

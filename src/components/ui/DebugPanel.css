@@ -1,7 +1,7 @@
 
 /* debug panel */
 
-.debug-toggle {
+/* .debug-toggle {
   border: 1px solid rgba(148, 163, 184, 0.7);
   background: rgba(15, 23, 42, 0.8);
   color: #e5e7eb;
@@ -13,14 +13,26 @@
 
 .debug-toggle:hover {
   background: rgba(30, 41, 59, 0.9);
+} */
+
+.debug-panel--floating {
+  position: absolute;
+  top: 2.5rem;  /* below the toggle */
+  right: 0.75rem; /* align with Show debug toggle */
+  z-index: 30;
+
+  width: 360px;
+  max-height: calc(100vh - 4.5rem);
+  overflow-y: auto;
+
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
 }
 
-.dev-mode .debug-toggle {
-  background: rgba(235, 204, 45, 0.8);
-  color: black;
-}
-.dev-mode .debug-toggle:hover {
-  background: rgba(235, 130, 45, 0.8);
+.debug-panel--floating h2 {
+  margin-top: 0;
 }
 
 .debug-body {
