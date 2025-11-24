@@ -4,6 +4,7 @@ import ConstellationArt from "./ConstellationArt";
 import BubblesArt from "./BubblesArt";
 import WaveArt from "./WaveArt";
 import SupershapeArt from "./SupershapeArt";
+import IsoGridArt from "./IsoGridArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -39,6 +40,11 @@ export const STYLES: Record<
     id: "supershape",
     label: "Supershape Stars",
     component: SupershapeArt,
+  },
+  isogrid: {
+    id: "isogrid",
+    label: "IsoGrid",
+    component: IsoGridArt,
   },
 } as const;
 
