@@ -126,3 +126,38 @@
 .control-row + .control-row {
   margin-top: 0.25rem;
 }
+
+/* Mobile style gallery */
+.style-gallery {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.25rem 0.1rem;
+  margin-top: 0.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+.style-chip {
+  flex: 0 0 auto;          /* <- important: don’t shrink */
+  scroll-snap-align: start;
+
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.style-chip--selected {
+  border-color: #38bdf8;
+  background: radial-gradient(circle at 30% 0%, #38bdf8, #0f172a);
+  color: #f9fafb;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+}

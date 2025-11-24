@@ -1,7 +1,17 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
 import type { Mode, StyleId } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
+import { STYLES } from "../art/styleRegistry";
+import "./panel.css";
 import "./ControlPanel.css";
+
+const STYLE_OPTIONS = [
+  { id: null as StyleId | null, label: "auto" },
+  ...Object.values(STYLES).map((s) => ({
+    id: s.id as StyleId,
+    label: s.label,
+  })),
+];
 
 interface ControlPanelProps {
   mode: Mode;
@@ -75,142 +85,162 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       onStyleChange(null);
       return;
     }
-
-    // Explicitly narrow to StyleId without casts
-    if (
-      value === "orbits" ||
-      value === "strata" ||
-      value === "constellation" ||
-      value === "bubbles" ||
-      value === "waves" ||
-      value === "supershape" ||
-      value === "isogrid" ||
-      value === "crystal" ||
-      value === "lattice" ||
-      value === "nebula" ||
-      value === "aurora" ||
-      value === "voronoi" ||
-      value === "fern" ||
-      value === "koch" ||
-      value === "tree" ||
-      value === "flowfield"
-    ) {
-      onStyleChange(value);
-    } else {
-      // Unknown value (shouldn't happen with our options)
-      onStyleChange(null);
-    }
-  };
-
-  const panelCls = 'control-panel' + (isDev && ' dev-mode');
+    // TODO: validate style
+    onStyleChange(value);
+  }
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     setOpen(!isMobile);
   }, [isMobile]);
 
+  const toggleLabel = open ? "Hide controls" : "Show controls";
+  const toggleClasses = 
+    "panel-toggle panel-toggle--controls" +
+    (open ? "" : " panel-toggle--off") +
+    (isDev ? " panel-toggle--dev" : "");
+
   if (isMobile) {
     return (
-      <div className="control-panel control-panel--mobile">
-      <div className="control-header">
-        <span className="control-title">Controls</span>
-        {/* your existing toggle here if you have one */}
-      </div>
-
-      {/* Mode toggle */}
-      <div className="control-section">
-        <div className="control-row">
-          <span className="control-label">Mode</span>
-          <div className="control-value">
-            <label className="control-radio">
-              <input
-                type="radio"
-                name="mode"
-                value="auto"
-                checked={mode === "auto"}
-                onChange={() => onModeChange("auto")}
-              />
-              <span>Auto</span>
-            </label>
-            <label className="control-radio">
-              <input
-                type="radio"
-                name="mode"
-                value="manual"
-                checked={mode === "manual"}
-                onChange={() => onModeChange("manual")}
-              />
-              <span>Manual</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Complexity + animation */}
-      <div className="control-section">
-        <div className="control-row">
-          <span className="control-label">Complexity</span>
-          <div className="control-value control-seed-row">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              className="control-range"
-              value={complexity}
-              onChange={(e) =>
-                onComplexityChange(Number(e.target.value))
-              }
-            />
-            <span className="control-range-value">
-              {Math.round(complexity)}
-            </span>
-          </div>
-        </div>
-
-        <div className="control-row" style={{ marginTop: "0.25rem" }}>
-          <span className="control-label">Animation</span>
-          <div className="control-value">
-            <label className="control-radio">
-              <input
-                type="checkbox"
-                checked={isAnimating}
-                onChange={onToggleAnimation}
-              />
-              <span>Animate complexity</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      {/* Optional: tiny button for palette */}
-      <div className="control-section">
-        <button
-          className="control-button control-button--small"
-          onClick={onShufflePalette}
-        >
-          Shuffle palette
-        </button>
-      </div>
-    </div>
-    );
-  }
-
-  return (
-    <div className={panelCls}>
-      <button
-        className="control-toggle"
+      <>
+      <button 
+        className={toggleClasses} 
         onClick={() => setOpen((o) => !o)}
       >
-        {open ? "Hide controls" : "Show controls"}
+        <span className="panel-toggle__dot" />
+        <span>{toggleLabel}</span>
+      </button>
+      <div className="control-panel control-panel--mobile">
+      {open && (
+      <>
+        <div className="control-header">
+          <span className="control-title">Controls</span>
+        </div>
+        <div className="control-section">
+          <div className="control-row">
+            <span className="control-label">Mode</span>
+            <div className="control-value">
+              <label className="control-radio">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="auto"
+                  checked={mode === "auto"}
+                  onChange={() => onModeChange("auto")}
+                />
+                <span>Auto</span>
+              </label>
+              <label className="control-radio">
+                <input
+                  type="radio"
+                  name="mode"
+                  value="manual"
+                  checked={mode === "manual"}
+                  onChange={() => onModeChange("manual")}
+                />
+                <span>Manual</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Style Gallery (mobile) */}
+        <div className="control-section">
+          <div className="control-row">
+            <span className="control-label">Style</span>
+          </div>
+          <div className="style-gallery">
+            {STYLE_OPTIONS.map((opt) => {
+              const isSelected =
+                opt.id === null
+                  ? mode === "auto" && manualStyle == null
+                  : mode === "manual" && manualStyle === opt.id;
+
+              const className = "style-chips" + (isSelected ? " style-chip--selected" : "");
+
+              return (
+                <button
+                  key={opt.id ?? "auto"}
+                  className={className}
+                  type="button"
+                  onClick={() => {
+                    if (opt.id === null) {
+                      // auto style selection
+                      onModeChange("auto");
+                      onStyleChange(null);
+                    } else {
+                      onModeChange("manual");
+                      onStyleChange(opt.id);
+                    }
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Complexity (mobile) */}
+        <div className="control-section">
+          <div className="control-row">
+            <span className="control-label">Complexity</span>
+            <div className="control-value control-seed-row">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                className="control-range"
+                value={complexity}
+                disabled={mode !== "manual"}
+                onChange={(e) =>
+                  onComplexityChange(Number(e.target.value))
+                }
+              />
+              <span className="control-range-value">
+                {Math.round(complexity)}
+              </span>
+            </div>
+          </div>
+          <div className="control-row" style={{ marginTop: "0.25rem" }}>
+            <span className="control-label">Animation</span>
+            <div className="control-value">
+              <label className="control-radio">
+                <input
+                  type="checkbox"
+                  checked={isAnimating}
+                  onChange={onToggleAnimation}
+                />
+                <span>Animate Complexity</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </>
+      )}
+    </div>
+  </>
+  )}
+    
+
+  // Desktop version
+  return (
+    <>
+      <button
+        className={toggleClasses}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span className="panel-toggle__dot" />
+        <span>{toggleLabel}</span>
       </button>
 
       {open && (
-        <div className="control-body">
-          <h2 className="control-title">Controls</h2>
+        <div className="panel-body">
+          <h2 className="panel-title">Controls</h2>
 
           {/* Mode */}
-          <div className="control-section">
+          <div className="panel-section">
             <div className="control-row">
               <span className="control-label">Mode</span>
               <div className="control-value">
@@ -354,7 +384,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
         </div>
       )}
-    </div>
+    </>
   );
 };
 
