@@ -1,0 +1,90 @@
+
+.panel-toggle {
+  position: absolute;
+  top: 0.75rem;
+  z-index: 40;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.92);
+  color: #e5e7eb;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+/* Controls vs debug positions */
+.panel-toggle--controls {
+  left: 0.75rem;
+}
+
+.panel-toggle--debug {
+  right: 0.75rem;
+}
+
+/* Tiny status dot */
+.panel-toggle__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+}
+
+.panel-toggle--off .panel-toggle__dot {
+  background: #9ca3af;
+  box-shadow: none;
+}
+
+/* Dev highlight */
+.panel-toggle--dev {
+  background: #facc15;
+  border-color: #facc15;
+  color: #111827;
+}
+
+.panel-body {
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  max-width: 320px;
+  backdrop-filter: blur(6px);
+}
+
+.panel-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f9fafb;
+}
+
+.dev-mode .panel-title {
+  color: rgba(235, 204, 45, 0.8);
+}
+
+.panel-section {
+  margin-top: 0.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed rgba(148, 163, 184, 0.4);
+}
+
+.panel-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.panel-label {
+  color: #9ca3af;
+}
