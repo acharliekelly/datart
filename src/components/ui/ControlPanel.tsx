@@ -156,7 +156,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   ? mode === "auto" && manualStyle == null
                   : mode === "manual" && manualStyle === opt.id;
 
-              const className = "style-chips" + (isSelected ? " style-chip--selected" : "");
+              const className = "style-chip" + (isSelected ? " style-chip--selected" : "");
 
               return (
                 <button

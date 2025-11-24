@@ -1,15 +1,7 @@
 
 /* debug panel */
 
-.debug-panel {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 0.75rem;
-  color: #e5e7eb;
-}
-
-/* .debug-toggle {
+.debug-toggle {
   border: 1px solid rgba(148, 163, 184, 0.7);
   background: rgba(15, 23, 42, 0.8);
   color: #e5e7eb;
@@ -68,7 +60,7 @@
 
 .debug-label {
   color: #9ca3af;
-}*/
+}
 
 .debug-value {
   text-align: right;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import './panel.css';
@@ -22,19 +22,13 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipLoaded,
   mode,
   ipError,
-  isMobile
 }) => {
-  const [open, setOpen] = useState(() => !isMobile);
+  const [open, setOpen] = useState(() => false);
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setOpen(!isMobile);
-  }, [isMobile]);
 
   const toggleLabel = open ? "Hide debug" : "Show debug";
   const toggleClasses =
@@ -53,7 +47,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
       </button>
 
       {open && (
-        <div className="debug-panel">
+        <div className="panel-body">
           <h2 className="panel-title">Generation Debug</h2>
           
           <div className="panel-section">

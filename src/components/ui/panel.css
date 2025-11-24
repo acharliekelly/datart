@@ -68,9 +68,10 @@
   color: #f9fafb;
 }
 
-.dev-mode .panel-title {
-  color: rgba(235, 204, 45, 0.8);
+.panel-toggle--dev .panel-title {
+  color: #facc15;
 }
+
 
 .panel-section {
   margin-top: 0.4rem;
