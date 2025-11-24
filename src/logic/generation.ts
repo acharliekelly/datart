@@ -67,7 +67,7 @@ export function buildGenerationState(
     seedDial,
     styleId: effectiveStyle,
     styleReason: options.mode === "manual" && options.manualStyle
-      ? `manual override >> ${effectiveStyle} (auto would be ${styleDecision})`
+      ? `manual override >> ${effectiveStyle}`
       : autoReason,
     palette,
     paletteShift,

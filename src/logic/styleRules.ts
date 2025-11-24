@@ -22,13 +22,13 @@ export function chooseStyle(
   const tz = traits.timeZone;
 
   if (continent === "NA") {
-    return getDecision("orbits", "continent = NA");
+    return getDecision("orbits", "continent = North America");
   }
   if (continent === "EU") {
-    return getDecision("strata", "continent = EU");
+    return getDecision("strata", "continent = Europe");
   }
   if (continent === "AS") {
-    return getDecision("constellation", "continent = AS");
+    return getDecision("constellation", "continent = Asia");
   }
 
   if (tz.startsWith("America/")) {
@@ -43,7 +43,8 @@ export function chooseStyle(
     return getDecision("bubbles", "mobile device");
   }
 
-  const styles: StyleId[] = ["orbits", "strata", "constellation", "bubbles"];
+  const styles: StyleId[] = [
+    "orbits", "strata", "constellation", "bubbles", "waves", "supershape", "isogrid", "crystal"];
   const index = numericSeed % styles.length;
   return getDecision(styles[index], 
     `fallback: seed % ${styles.length} = ${index} => ${styles[index]}`);
