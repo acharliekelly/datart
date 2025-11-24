@@ -20,6 +20,14 @@
   background: rgba(30, 41, 59, 0.9);
 }
 
+.dev-mode .control-toggle {
+  background: rgba(235, 204, 45, 0.8);
+  color: black;
+}
+.dev-mode .control-toggle:hover {
+  background: rgba(235, 130, 45, 0.8);
+}
+
 .control-body {
   margin-top: 0.5rem;
   padding: 0.6rem 0.75rem;
