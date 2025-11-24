@@ -5,6 +5,7 @@ import BubblesArt from "./BubblesArt";
 import WaveArt from "./WaveArt";
 import SupershapeArt from "./SupershapeArt";
 import IsoGridArt from "./IsoGridArt";
+import CrystalArt from "./CrystalArt";
 import type { ArtStyleProps } from "../../logic/types";
 
 export const STYLES: Record<
@@ -45,6 +46,11 @@ export const STYLES: Record<
     id: "isogrid",
     label: "IsoGrid",
     component: IsoGridArt,
+  },
+  crystal: {
+    id: "crystal",
+    label: "Crystal",
+    component: CrystalArt,
   },
 } as const;
 
