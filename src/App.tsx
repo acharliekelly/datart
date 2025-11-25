@@ -18,6 +18,7 @@ import { getBaseTraits, applyIpInfo } from "./logic/fingerprint";
 import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
 import ArtContainer from "./components/ui/ArtContainer";
+import MiniHud from "./components/ui/MiniHud";
 import { useIpInfo } from "./hooks/useIpInfo";
 import { useIsMobile } from "./hooks/useIsMobile";
 import "./App.css";
@@ -156,6 +157,15 @@ const App: React.FC = () => {
         ipError={ipError}
         isMobile={isMobile}
         hudHidden={hudHidden}
+      />
+      <MiniHud
+        mode={options.mode}
+        manualStyle={options.manualStyle ?? null}
+        effectiveStyle={generationState.styleId}
+        isAnimating={isAnimating}
+        onModeChange={handleModeChange}
+        onStyleChange={handleStyleChange}
+        onToggleAnimation={handleToggleAnimation}
       />
     </div>
   );
