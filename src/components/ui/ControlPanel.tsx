@@ -28,6 +28,7 @@ interface ControlPanelProps {
   isAnimating: boolean;
   onToggleAnimation: () => void;
   isMobile?: boolean;
+  hudHidden?: boolean;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -43,6 +44,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isAnimating,
   onToggleAnimation,
   isMobile = false,
+  hudHidden
 }) => {
   const [open, setOpen] = useState(() => !isMobile);
 
@@ -109,6 +111,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     "panel-toggle panel-toggle--controls" +
     (open ? " panel-toggle--visible" : "") +
     (isDev ? " panel-toggle--dev" : "");
+
+  if (hudHidden) {
+    return null;
+  }
 
   if (isMobile) {
     return (

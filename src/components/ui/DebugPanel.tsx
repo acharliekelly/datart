@@ -17,6 +17,7 @@ interface DebugPanelProps {
   mode: Mode;
   ipError?: string | null;
   isMobile?: boolean;
+  hudHidden?: boolean;
 }
 
 const DebugPanel: React.FC<DebugPanelProps> = ({
@@ -24,6 +25,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipLoaded,
   mode,
   ipError,
+  hudHidden
 }) => {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -47,6 +49,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     (isDev ? " panel-toggle--dev" : "");
   const panelClasses = "debug-panel panel-body debug-panel--floating" +
     (open ? " debug-panel--visible" : "");
+
+  // HUD closed
+  if (hudHidden) return null;
 
   return (
     <>
