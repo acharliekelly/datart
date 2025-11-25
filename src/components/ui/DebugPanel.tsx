@@ -34,9 +34,21 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
 
+  const panelWidth = 360;
+  const margin = 12;
+
+  const initialX = typeof window !== "undefined"
+    ? Math.max(margin, window.innerWidth - panelWidth - margin)
+    : 1000; // fallback
+
   const { panelStyle, handleProps } = useDraggablePanel({
-    initialX: window.innerWidth - 280, // near right edge
-    initialY: 50,
+    initialX,
+    initialY: 60,
+    bounds: {
+      margin,
+      panelWidth,
+      panelHeight: 400, // rough, for clamping
+    }
   })
 
   const short = (value: string, max = 80): string =>
@@ -54,7 +66,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   if (hudHidden) return null;
 
   return (
-    <>
+    <div ref={rootRef}>
       <button
         className={toggleClasses}
         onClick={() => setOpen((o) => !o)}
@@ -65,7 +77,6 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 
       {open && (
         <div 
-          ref={rootRef}
           className={panelClasses}
           style={panelStyle}
         >
@@ -256,7 +267,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
           </div>  
         </div>
       )}
-    </>
+    </div>
   );
 };
 
