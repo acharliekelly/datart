@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { useDraggablePanel } from "../../hooks/useDraggablePanel";
 import './panel.css';
 import './DebugPanel.css';
 
@@ -23,9 +25,17 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   mode,
   ipError,
 }) => {
-  const [open, setOpen] = useState(() => false);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  useClickOutside(rootRef, () => setOpen(false), open);
+
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
+
+  const { panelStyle, handleProps } = useDraggablePanel({
+    initialX: window.innerWidth - 280, // near right edge
+    initialY: 50,
+  })
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
@@ -35,6 +45,8 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     "panel-toggle panel-toggle--debug" +
     (open ? "" : " panel-toggle--off") +
     (isDev ? " panel-toggle--dev" : "");
+  const panelClasses = "debug-panel panel-body debug-panel--floating" +
+    (open ? " debug-panel--visible" : "");
 
   return (
     <>
@@ -47,9 +59,15 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
       </button>
 
       {open && (
-        <div className="debug-panel debug-panel--floating debug-body">
-          <h2 className="panel-title">Generation Debug</h2>
-          
+        <div 
+          ref={rootRef}
+          className={panelClasses}
+          style={panelStyle}
+        >
+          <div className="panel-header drag-handle" {...handleProps}>
+            <h2 className="panel-title">Generation Debug</h2>
+          </div>
+
           <div className="panel-section">
             <div className="panel-row">
               <span className="panel-label">Mode</span>

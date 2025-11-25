@@ -89,3 +89,19 @@
 .panel-label {
   color: #9ca3af;
 }
+
+.control-panel, .debug-panel {
+  transition: transform 180ms ease-out, opacity 180ms ease-out;
+  transform: translateY(-6px);
+  opacity: 0;
+}
+
+.control-panel--visible, .debug-panel--visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.drag-handle {
+  cursor: move;
+}
+
