@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
+import { useClickOutside } from "../../hooks/useClickOutside";
+import { useDraggablePanel } from "../../hooks/useDraggablePanel";
 import './panel.css';
 import './DebugPanel.css';
 
@@ -15,6 +17,7 @@ interface DebugPanelProps {
   mode: Mode;
   ipError?: string | null;
   isMobile?: boolean;
+  hudHidden?: boolean;
 }
 
 const DebugPanel: React.FC<DebugPanelProps> = ({
@@ -22,10 +25,31 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipLoaded,
   mode,
   ipError,
+  hudHidden
 }) => {
-  const [open, setOpen] = useState(() => false);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  useClickOutside(rootRef, () => setOpen(false), open);
+
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
+
+  const panelWidth = 360;
+  const margin = 12;
+
+  const initialX = typeof window !== "undefined"
+    ? Math.max(margin, window.innerWidth - panelWidth - margin)
+    : 1000; // fallback
+
+  const { panelStyle, handleProps } = useDraggablePanel({
+    initialX,
+    initialY: 60,
+    bounds: {
+      margin,
+      panelWidth,
+      panelHeight: 400, // rough, for clamping
+    }
+  })
 
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
@@ -35,9 +59,14 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     "panel-toggle panel-toggle--debug" +
     (open ? "" : " panel-toggle--off") +
     (isDev ? " panel-toggle--dev" : "");
+  const panelClasses = "debug-panel panel-body debug-panel--floating" +
+    (open ? " debug-panel--visible" : "");
+
+  // HUD closed
+  if (hudHidden) return null;
 
   return (
-    <>
+    <div ref={rootRef}>
       <button
         className={toggleClasses}
         onClick={() => setOpen((o) => !o)}
@@ -47,9 +76,14 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
       </button>
 
       {open && (
-        <div className="debug-panel debug-panel--floating debug-body">
-          <h2 className="panel-title">Generation Debug</h2>
-          
+        <div 
+          className={panelClasses}
+          style={panelStyle}
+        >
+          <div className="panel-header drag-handle" {...handleProps}>
+            <h2 className="panel-title">Generation Debug</h2>
+          </div>
+
           <div className="panel-section">
             <div className="panel-row">
               <span className="panel-label">Mode</span>
@@ -233,7 +267,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
           </div>  
         </div>
       )}
-    </>
+    </div>
   );
 };
 

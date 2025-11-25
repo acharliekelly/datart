@@ -24,15 +24,14 @@ import "./App.css";
 
 
 const App: React.FC = () => {
-  // 1) traits
   const [traits, setTraits] = useState<UserTraits>(() => getBaseTraits());
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hudHidden, setHudHidden] = useState(false);
   const complexityDirectionRef = useRef<1 | -1>(1);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
   const isMobile = useIsMobile();
 
-  // 2) options - SINGLE source of truth for mode
   const [options, setOptions] = useState<GenerationOptions>({
     mode: "auto",
     manualSeed: null,
@@ -41,7 +40,6 @@ const App: React.FC = () => {
     paletteShift: 0,
   });
 
-  // 3) derived generation state
   const generationState = useMemo<GenerationState>(
     () => buildGenerationState(traits, options),
       [traits, options]
@@ -93,6 +91,16 @@ const App: React.FC = () => {
     
   }, [ipInfo, isAnimating, setOptions]);
 
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "h" || e.key === "H") {
+        setHudHidden((h) => !h);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   
   
 
@@ -139,6 +147,7 @@ const App: React.FC = () => {
         isAnimating={isAnimating}
         onToggleAnimation={handleToggleAnimation}
         isMobile={isMobile}
+        hudHidden={hudHidden}
       />
       <DebugPanel 
         state={generationState} 
@@ -146,6 +155,7 @@ const App: React.FC = () => {
         mode={options.mode} 
         ipError={ipError}
         isMobile={isMobile}
+        hudHidden={hudHidden}
       />
     </div>
   );

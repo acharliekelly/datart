@@ -1,0 +1,83 @@
+name: DatArt Roadmap Task
+description: File a task related to DatArt's MVP or stretch goals
+labels: ["todo"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What area does this task belong to?
+      options:
+        - 🎨 Styles / Visual Design
+        - 🧪 Debug / Explainer UI
+        - 🧱 Code Cleanup / CSS Review
+        - 🎛️ Style Gallery (Stretch)
+        - 🔍 Fingerprint HUD Mode (Stretch)
+        - 🌐 Router Enhancements (Stretch)
+        - ✨ UI Polish & HUD Toggles (Stretch)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 – MVP
+        - P2 – Stretch
+        - P3 – Nice to have
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Task Title
+      placeholder: "Refactor fingerprint logic, Add style previews, Improve mobile chips…"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide details about what needs to be done.
+      placeholder: |
+        What is the problem?
+        What’s the ideal end state?
+        Any code pointers or file locations?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: steps
+    attributes:
+      label: Related Roadmap
+      description: Select the roadmap items this task touches.
+      options:
+        - label: Style curation (MVP)
+        - label: Debug Panel → Debug + Explainer (MVP)
+        - label: Code and logic refactor (MVP)
+        - label: CSS cleanup (MVP)
+        - label: Desktop style gallery (Stretch)
+        - label: Fingerprint HUD mode (Stretch)
+        - label: Style routes (/strata, /waves…) (Stretch)
+        - label: Full pattern shareable URLs (Stretch)
+        - label: UI polish (toggle animations, slide-in panels) (Stretch)
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      placeholder: Optional context, links, screenshots, references…
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this task to be considered complete?
+      placeholder: |
+        - [ ] Feature works on desktop + mobile
+        - [ ] Verified no regression in other styles
+        - [ ] CSS is cleaned up
+        - [ ] Debug/explainer behavior consistent
