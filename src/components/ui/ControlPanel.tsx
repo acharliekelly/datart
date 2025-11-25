@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, type ChangeEvent } from "react";
+import React, { useState, useRef, type ChangeEvent } from "react";
 import type { Mode, StyleId } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -46,7 +46,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isMobile = false,
   hudHidden
 }) => {
-  const [open, setOpen] = useState(() => !isMobile);
+  // const [open, setOpen] = useState(() => !isMobile);
+  const [open, setOpen] = useState(false);
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(rootRef, () => setOpen(false), open && !isMobile);
@@ -101,10 +102,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     onStyleChange(value);
   }
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setOpen(!isMobile);
-  }, [isMobile]);
+  // useEffect(() => {
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   setOpen(!isMobile);
+  // }, [isMobile]);
 
   const toggleLabel = open ? "Hide controls" : "Show controls";
   const toggleClasses = 
