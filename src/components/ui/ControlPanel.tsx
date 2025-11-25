@@ -109,7 +109,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const toggleLabel = open ? "Hide controls" : "Show controls";
   const toggleClasses = 
     "panel-toggle panel-toggle--controls" +
-    (open ? " panel-toggle--visible" : "") +
+    (open ? "" : " panel-toggle--off") +
     (isDev ? " panel-toggle--dev" : "");
 
   if (hudHidden) {
@@ -118,7 +118,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   if (isMobile) {
     return (
-      <>
+      <div ref={rootRef}>
         <button 
           className={toggleClasses} 
           onClick={() => setOpen((o) => !o)}
@@ -126,6 +126,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           <span className="panel-toggle__dot" />
           <span>{toggleLabel}</span>
         </button>
+
         {open && (
         <div className="control-panel control-panel--mobile">
           <div className="control-header">
@@ -234,7 +235,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         </div>
         )}
-    </>
+      </div>
   )}
     
 
@@ -245,7 +246,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     (open ? " control-panel--visible" : "");
 
   return (
-    <>
+    <div ref={rootRef}>
       <button
         className={toggleClasses}
         onClick={() => setOpen((o) => !o)}
@@ -256,12 +257,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
       {open && (
         <div 
-          ref={rootRef}
           className={panelCls}
           style={panelStyle}
         >
           <div 
-            className="panel-header drag-panel"
+            className="panel-header drag-handle"
             {...handleProps}
           >
             <h2 className="panel-title">Controls</h2>
@@ -405,7 +405,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       checked={isAnimating}
                       onChange={onToggleAnimation}
                     />
-                    <span>Animate complexity (0 &gt; 100 &gt; 0)</span>
+                    <span>Animate complexity</span>
                   </label>
                 </div>
               </div>
@@ -414,7 +414,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
