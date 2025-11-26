@@ -8,7 +8,7 @@ import type {
 import { buildFingerprint } from "./fingerprint";
 import { hashStringToInt, makeRng } from "./rng";
 import { generatePalette } from "./palette";
-import { chooseStyle } from "./styleRules";
+import { chooseStyleFromFingerprint } from "./styleRules";
 
 function shiftPalette(palette: string[], shift: number): string[] {
   if (!palette.length) return palette;
@@ -51,7 +51,8 @@ export function buildGenerationState(
   const rawPalette = generatePalette(rngForPalette);
   const palette = shiftPalette(rawPalette, paletteShift);
 
-  const styleDecision = chooseStyle(traits, effectiveSeed);
+  // const styleDecision = chooseStyle(traits, effectiveSeed);
+  const styleDecision = chooseStyleFromFingerprint(traits);
   const autoReason = styleDecision.reason;
   const effectiveStyle =
     options.mode === "manual" && options.manualStyle
