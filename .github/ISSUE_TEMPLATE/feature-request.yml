@@ -1,0 +1,72 @@
+name: 🌟 Feature request
+description: Request a new feature or improvement for DatArt
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - 🎨 Styles / Visual Design
+        - 🧪 Debug / Explainer UI
+        - 🧱 Code / Architecture / CSS
+        - 🎛️ Controls & HUD
+        - 🌐 Routing / Sharable URLs
+        - ✨ General UX Polish
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P1 – MVP
+        - P2 – Stretch
+        - P3 – Nice to have
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Short title
+      placeholder: "Curate Styles registry", "Add desktop style gallery", etc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      placeholder: "What this feature is and what it changes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / User value
+      placeholder: "Why this matters, who it helps, what problem it solves."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed approach
+      description: High-level implementation ideas or constraints.
+      placeholder: "Rough implementation plan, options, or notes."
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Checklist of what must be true for this to be 'done'.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true

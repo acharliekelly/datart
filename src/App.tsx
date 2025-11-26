@@ -103,9 +103,7 @@ const App: React.FC = () => {
   }, []);
 
   
-  
-
-  // 4) handlers that only ever update "options"
+  // handlers that only ever update "options"
   const handleModeChange = (mode: Mode) =>
     setOptions((prev) => ({ ...prev, mode }));
 
