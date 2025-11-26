@@ -105,3 +105,13 @@
   cursor: move;
 }
 
+.panel-floating {
+  position: absolute;
+  z-index: 32;
+  top: 2.8rem;
+  left: 0.75rem;
+  /* width/height tuned for mobile; desktop can override with inline style */
+  max-width: calc(100vw - 1.5rem);
+  max-height: calc(100vh - 1.5rem);
+  overflow-y: auto;
+}

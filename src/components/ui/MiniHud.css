@@ -1,7 +1,7 @@
 /* src/components/ui/MiniHud.css */
 .mini-hud {
   position: absolute;
-  top: 0.75rem;
+  top: 2.4rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 35;
@@ -75,7 +75,7 @@
 /* Tiny tweak so HUD doesn't fight on very small screens */
 @media (max-width: 480px) {
   .mini-hud {
-    top: 0.5rem;
+    top: 2.6rem;
     padding-inline: 0.3rem;
   }
 

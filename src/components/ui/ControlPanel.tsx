@@ -4,8 +4,9 @@ import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import { useDraggablePanel } from "../../hooks/useDraggablePanel";
 import { STYLES } from "../art/styleRegistry";
-import "./panel.css";
+
 import "./ControlPanel.css";
+import "./panel.css";
 
 const STYLE_OPTIONS = [
   { id: null as StyleId | null, label: "auto" },
@@ -46,10 +47,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isMobile = false,
   hudHidden
 }) => {
-  // const [open, setOpen] = useState(() => !isMobile);
   const [open, setOpen] = useState(false);
+  const isDev = useIsDev();
 
   const rootRef = useRef<HTMLDivElement | null>(null);
+  // close when clicking outside toggle+panel
   useClickOutside(rootRef, () => setOpen(false), open && !isMobile);
 
   const { panelStyle, handleProps } = useDraggablePanel({
@@ -57,9 +59,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     initialY: 50,
   });
 
-  const isDev = useIsDev();
-
   const dialValue = manualSeed ?? 50; // 0–100 dial
+  const complexityValue = complexity;
 
   const handleSeedChange = (
     event: ChangeEvent<HTMLInputElement>
@@ -71,8 +72,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     }
     onSeedChange(value);
   };
-
-  const complexityValue = complexity;
 
   const handleComplexityChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
@@ -102,16 +101,16 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     onStyleChange(value);
   }
 
-  // useEffect(() => {
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   setOpen(!isMobile);
-  // }, [isMobile]);
-
   const toggleLabel = open ? "Hide controls" : "Show controls";
   const toggleClasses = 
     "panel-toggle panel-toggle--controls" +
     (open ? "" : " panel-toggle--off") +
     (isDev ? " panel-toggle--dev" : "");
+  const panelCls =
+    "control-panel" +
+    (isDev ? " dev-mode" : "") +
+    (open ? " control-panel--visible" : "") +
+    (isMobile ? "" : "control-panel--desktop");
 
   if (hudHidden) {
     return null;
@@ -120,6 +119,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   if (isMobile) {
     return (
       <div ref={rootRef}>
+        {/* floating toggle */}
         <button 
           className={toggleClasses} 
           onClick={() => setOpen((o) => !o)}
@@ -129,7 +129,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </button>
 
         {open && (
-        <div className="control-panel control-panel--mobile">
+        <div className="control-panel panel-body panel-floating control-panel--mobile control-panel--visible">
           <div className="control-header">
             <span className="control-title">Controls</span>
           </div>
@@ -241,11 +241,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     
 
   // Desktop version
-  const panelCls =
-    "control-panel" +
-    (isDev ? " dev-mode" : "") +
-    (open ? " control-panel--visible" : "");
-
   return (
     <div ref={rootRef}>
       <button
@@ -257,161 +252,149 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </button>
 
       {open && (
-        <div 
-          className={panelCls}
-          style={panelStyle}
-        >
-          <div 
-            className="panel-header drag-handle"
-            {...handleProps}
-          >
-            <h2 className="panel-title">Controls</h2>
-          </div>
+        <div className={panelCls} style={panelStyle}>
+          <div className="control-body">
+            <div 
+              className="panel-header drag-handle"
+              {...handleProps}
+            >
+              <h2 className="panel-title">Controls</h2>
+            </div>
           
-          <div className="panel-body">
-          {/* Mode */}
-            <div className="panel-section">
-              <div className="control-row">
-                <span className="control-label">Mode</span>
-                <div className="control-value">
-                  <label className="control-radio">
+            <div className="panel-body panel-floating ">
+            {/* Mode */}
+              <div className="panel-section">
+                <div className="control-row">
+                  <span className="control-label">Mode</span>
+                  <div className="control-value">
+                    <label className="control-radio">
+                      <input
+                        type="radio"
+                        name="mode"
+                        value="auto"
+                        checked={mode === "auto"}
+                        onChange={() => onModeChange("auto")}
+                      />
+                      <span>Auto (fingerprint)</span>
+                    </label>
+                    <label className="control-radio">
+                      <input
+                        type="radio"
+                        name="mode"
+                        value="manual"
+                        checked={mode === "manual"}
+                        onChange={() => onModeChange("manual")}
+                      />
+                      <span>Manual</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Style selector */}
+              <div className="control-section">
+                <div className="control-row">
+                  <span className="control-label">Style</span>
+                  <div className="control-value">
+                    <select
+                      className="control-select"
+                      value={manualStyle ?? ""}
+                      onChange={handleStyleChange}
+                      disabled={mode !== "manual"}
+                    >
+                      <option value="">auto</option>
+                      {STYLE_OPTIONS.map((opt) => {
+                        return (
+                          <option key={opt.id} value={opt.id ?? ""}>{opt.label}</option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                  <div className="control-hint">
+                    Leave as "auto" to use continent / timezone rules.
+                  </div>
+                </div>
+              </div>
+
+
+              {/* Seed dial */}
+              <div className="control-section">
+                <div className="control-row">
+                  <span className="control-label">Seed</span>
+                  <div className="control-value control-seed-row">
                     <input
-                      type="radio"
-                      name="mode"
-                      value="auto"
-                      checked={mode === "auto"}
-                      onChange={() => onModeChange("auto")}
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="control-range"
+                      value={dialValue}
+                      onChange={handleSeedChange}
+                      disabled={mode !== "manual"}
                     />
-                    <span>Auto (fingerprint)</span>
-                  </label>
-                  <label className="control-radio">
+                    <span className="control-range-value">
+                      {dialValue}
+                    </span>
+                    <button
+                      className="control-button"
+                      onClick={handleRandomize}
+                    >
+                      Random
+                    </button>
+                  </div>
+                  <div className="control-hint">
+                    In manual mode, this dial perturbs the fingerprint to
+                    create a new variation.
+                  </div>
+                </div>
+              </div>
+
+              {/* Complexity dial */}
+              <div className="control-section">
+                <div className="control-row">
+                  <span className="control-label">Complexity</span>
+                  <div className="control-value control-seed-row">
                     <input
-                      type="radio"
-                      name="mode"
-                      value="manual"
-                      checked={mode === "manual"}
-                      onChange={() => onModeChange("manual")}
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="control-range"
+                      value={complexityValue}
+                      onChange={handleComplexityChange}
+                      disabled={mode !== "manual" || isAnimating}
                     />
-                    <span>Manual</span>
-                  </label>
+                    <span className="control-range-value">
+                      {Math.round(complexityValue)}
+                    </span>
+                    <button
+                      className="control-button"
+                      onClick={onShufflePalette}
+                    >
+                      Shuffle Palette
+                    </button>
+                  </div>
+                  <div className="control-hint">
+                    Higher complexity &gt; more shapes. Shuffle to keep structure but change colors.
+                  </div>
+                </div>
+
+                <div className="control-row" style={{ marginTop: "0.3rem" }}>
+                  <span className="control-label">Animation</span>
+                  <div className="control-value">
+                    <label className="control-radio">
+                      <input
+                        type="checkbox"
+                        checked={isAnimating}
+                        onChange={onToggleAnimation}
+                      />
+                      <span>Animate complexity</span>
+                    </label>
+                  </div>
                 </div>
               </div>
+
             </div>
-
-            {/* Style selector */}
-            <div className="control-section">
-              <div className="control-row">
-                <span className="control-label">Style</span>
-                <div className="control-value">
-                  <select
-                    className="control-select"
-                    value={manualStyle ?? ""}
-                    onChange={handleStyleChange}
-                    disabled={mode !== "manual"}
-                  >
-                    <option value="">auto</option>
-                    <option value="orbits">Orbits</option>
-                    <option value="strata">Strata</option>
-                    <option value="constellation">Constellation</option>
-                    <option value="bubbles">Bubbles</option>
-                    <option value="waves">Waves</option>
-                    <option value="supershape">Supershape Stars</option>
-                    <option value="isogrid">IsoGrid</option>
-                    <option value="crystal">Crystal</option>
-                    <option value="lattice">Lattice</option>
-                    <option value="nebula">Nebula</option>
-                    <option value="aurora">Aurora</option>
-                    <option value="voronoi">Voronoi Bloom</option>
-                    <option value="fern">Fractal Fern</option>
-                    <option value="koch">Koch Snowflake</option>
-                    <option value="tree">Recursive Tree</option>
-                    <option value="flowfield">Flow Field</option>
-                  </select>
-                </div>
-                <div className="control-hint">
-                  Leave as "auto" to use continent / timezone rules.
-                </div>
-              </div>
-            </div>
-
-
-            {/* Seed dial */}
-            <div className="control-section">
-              <div className="control-row">
-                <span className="control-label">Seed</span>
-                <div className="control-value control-seed-row">
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    className="control-range"
-                    value={dialValue}
-                    onChange={handleSeedChange}
-                    disabled={mode !== "manual"}
-                  />
-                  <span className="control-range-value">
-                    {dialValue}
-                  </span>
-                  <button
-                    className="control-button"
-                    onClick={handleRandomize}
-                  >
-                    Random
-                  </button>
-                </div>
-                <div className="control-hint">
-                  In manual mode, this dial perturbs the fingerprint to
-                  create a new variation.
-                </div>
-              </div>
-            </div>
-
-            {/* Complexity dial */}
-            <div className="control-section">
-              <div className="control-row">
-                <span className="control-label">Complexity</span>
-                <div className="control-value control-seed-row">
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    className="control-range"
-                    value={complexityValue}
-                    onChange={handleComplexityChange}
-                    disabled={mode !== "manual" || isAnimating}
-                  />
-                  <span className="control-range-value">
-                    {Math.round(complexityValue)}
-                  </span>
-                  <button
-                    className="control-button"
-                    onClick={onShufflePalette}
-                  >
-                    Shuffle Palette
-                  </button>
-                </div>
-                <div className="control-hint">
-                  Higher complexity &gt; more shapes. Shuffle to keep structure but change colors.
-                </div>
-              </div>
-
-              <div className="control-row" style={{ marginTop: "0.3rem" }}>
-                <span className="control-label">Animation</span>
-                <div className="control-value">
-                  <label className="control-radio">
-                    <input
-                      type="checkbox"
-                      checked={isAnimating}
-                      onChange={onToggleAnimation}
-                    />
-                    <span>Animate complexity</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       )}
