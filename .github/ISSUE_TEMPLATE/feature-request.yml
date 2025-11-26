@@ -31,7 +31,7 @@ body:
     id: title
     attributes:
       label: Short title
-      placeholder: "Curate Styles registry", "Add desktop style gallery", etc.
+      placeholder: "Curate Styles registry"
     validations:
       required: true
 
