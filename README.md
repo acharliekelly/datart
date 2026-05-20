@@ -50,7 +50,9 @@ A simple animation toggle smoothly sweeps complexity from 0 to 100 to 0, creatin
 
 ### 🔊 Sonification
 
-The Sound control starts a Web Audio interpretation of the current artwork. Style, seed, palette, and complexity influence the tempo, notes, waveform, brightness, and stereo movement.
+The Sound control starts a Web Audio interpretation of the current artwork. Style, seed, palette, and complexity influence the tempo, notes, waveform, brightness, stereo movement, echo, rhythm, and chord/drone accents.
+
+Audio profiles are designed to loosely match the visual language: orbits pulse, strata drones, constellations sparkle, grids tick, branches split into short echoes, and flow-style visuals drift.
 
 Audio starts only after a button press, matching browser autoplay rules.
 

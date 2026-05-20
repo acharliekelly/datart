@@ -74,7 +74,7 @@ Implemented notes:
 
 ## Phase 3: Add Audio Sonification
 
-Status: initial implementation on `feat/sonification`
+Status: Phase 3B sound-spruce pass implemented on `feat/sonification`
 
 Priority: high
 
@@ -121,6 +121,13 @@ Implemented notes:
 - `useSonification()` owns the Web Audio engine and starts only from user interaction.
 - MiniHud exposes a visible Sound button; ControlPanel exposes start/stop, volume, current audio summary, and errors.
 - Unit tests cover deterministic mapping, complexity-to-density behavior, and conservative audio parameter ranges.
+
+Phase 3B notes:
+
+- Added style-specific audio profiles so visual styles map to more distinct sound modes: pulse, drone, sparkle, pluck, wave, grid, bloom, branch, and flow.
+- Added profile-driven scales, waveforms, rhythms, envelopes, echo settings, filter resonance, root offsets, and chord/drone accents.
+- The Web Audio engine now supports rhythmic spacing, echo feedback, accent notes, branch/sparkle follow-up notes, and occasional chord/drone layers.
+- Unit tests now verify that representative visual styles produce distinct audio modes, waveforms, and summaries.
 
 ## Phase 4: Accessibility And Presentation Polish
 
