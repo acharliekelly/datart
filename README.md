@@ -56,6 +56,16 @@ Audio profiles are designed to loosely match the visual language: orbits pulse, 
 
 Audio starts only after a button press, matching browser autoplay rules.
 
+### ♿ Accessibility
+
+DatArt includes a screen-reader summary of the current artwork and sound state. The summary includes style, mode, complexity, animation state, reduced-motion status, sound state, audio profile, and palette count.
+
+Keyboard support:
+- Tab reaches the corner toggles, MiniHud controls, style controls, sound controls, and debug controls.
+- Enter or Space activates buttons and toggles.
+- Escape closes the controls or debug panel when either is open.
+- If reduced motion is requested, the app starts with animation off unless the visitor explicitly turns animation on.
+
 ### 🪩 Debug Panel
 
 Shows:
@@ -92,6 +102,7 @@ src/
     useIpInfo.ts
     useSonification.ts
   logic/
+    accessibilitySummary.ts
     audioMapping.ts
     fingerprint.ts
     generation.ts
@@ -150,6 +161,16 @@ npm run test
 npm run ci
 ```
 This runs lint, TypeScript type-checking for app and test files, unit tests, and the production build. Use this before pushing to `main`, since Netlify deploys from that branch.
+
+### Manual accessibility check
+
+Before a demo or deploy:
+- Navigate the app with only the keyboard.
+- Confirm focus outlines are visible.
+- Confirm Escape closes open panels.
+- Confirm Sound starts only after pressing a sound button.
+- Confirm reduced-motion mode starts with animation off.
+- With a screen reader, confirm the generated artwork and sound summary is announced.
 
 ### Preview the production build
 ```

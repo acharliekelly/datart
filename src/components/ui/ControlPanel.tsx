@@ -1,4 +1,4 @@
-import React, { useState, useRef, type ChangeEvent } from "react";
+import React, { useEffect, useState, useRef, type ChangeEvent } from "react";
 import type { Mode, StyleId } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -73,6 +73,23 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
   const dialValue = manualSeed ?? 50; // 0–100 dial
   const complexityValue = complexity;
+  const controlsPanelId = isMobile
+    ? "datart-controls-panel-mobile"
+    : "datart-controls-panel";
+  const roundedAudioVolume = Math.round(audioVolume * 100);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open]);
 
   const handleSeedChange = (
     event: ChangeEvent<HTMLInputElement>
@@ -141,6 +158,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {/* floating toggle */}
         <button 
           className={toggleClasses} 
+          type="button"
+          aria-expanded={open}
+          aria-controls={controlsPanelId}
           onClick={() => setOpen((o) => !o)}
         >
           <span className="panel-toggle__dot" />
@@ -148,7 +168,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         </button>
 
         {open && (
-        <div className="control-panel panel-body panel-floating control-panel--mobile control-panel--visible">
+        <div
+          id={controlsPanelId}
+          className="control-panel panel-body panel-floating control-panel--mobile control-panel--visible"
+          role="dialog"
+          aria-label="DatArt controls"
+        >
           <div className="control-header">
             <span className="control-title">Controls</span>
           </div>
@@ -222,15 +247,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
             <div className="control-row">
               <span className="control-label">Complexity</span>
               <div className="control-value control-seed-row">
-                <input
-                  type="range"
+                  <input
+                    type="range"
                   min={0}
                   max={100}
                   step={1}
-                  className="control-range"
-                  value={complexity}
-                  disabled={mode !== "manual"}
-                  onChange={(e) =>
+                    className="control-range"
+                    value={complexity}
+                    disabled={mode !== "manual"}
+                    aria-label="Complexity"
+                    aria-valuetext={`${Math.round(complexity)} percent complexity`}
+                    onChange={(e) =>
                     onComplexityChange(Number(e.target.value))
                   }
                 />
@@ -274,12 +301,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   max={100}
                   step={1}
                   className="control-range"
-                  value={Math.round(audioVolume * 100)}
+                  value={roundedAudioVolume}
                   onChange={handleAudioVolumeChange}
                   aria-label="Sound volume"
+                  aria-valuetext={`${roundedAudioVolume} percent volume`}
                 />
                 <span className="control-range-value">
-                  {Math.round(audioVolume * 100)}
+                  {roundedAudioVolume}
                 </span>
               </div>
               <div className="control-hint">{audioSummary}</div>
@@ -301,6 +329,9 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     <div ref={rootRef}>
       <button
         className={toggleClasses}
+        type="button"
+        aria-expanded={open}
+        aria-controls={controlsPanelId}
         onClick={() => setOpen((o) => !o)}
       >
         <span className="panel-toggle__dot" />
@@ -308,7 +339,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </button>
 
       {open && (
-        <div className={panelCls} style={panelStyle}>
+        <div
+          id={controlsPanelId}
+          className={panelCls}
+          style={panelStyle}
+          role="dialog"
+          aria-label="DatArt controls"
+        >
           <div className="control-body">
             <div 
               className="panel-header drag-handle"
@@ -387,6 +424,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       value={dialValue}
                       onChange={handleSeedChange}
                       disabled={mode !== "manual"}
+                      aria-label="Manual seed"
+                      aria-valuetext={`${dialValue} seed value`}
                     />
                     <span className="control-range-value">
                       {dialValue}
@@ -419,6 +458,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       value={complexityValue}
                       onChange={handleComplexityChange}
                       disabled={mode !== "manual" || isAnimating}
+                      aria-label="Complexity"
+                      aria-valuetext={`${Math.round(complexityValue)} percent complexity`}
                     />
                     <span className="control-range-value">
                       {Math.round(complexityValue)}
@@ -470,12 +511,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       max={100}
                       step={1}
                       className="control-range"
-                      value={Math.round(audioVolume * 100)}
+                      value={roundedAudioVolume}
                       onChange={handleAudioVolumeChange}
                       aria-label="Sound volume"
+                      aria-valuetext={`${roundedAudioVolume} percent volume`}
                     />
                     <span className="control-range-value">
-                      {Math.round(audioVolume * 100)}
+                      {roundedAudioVolume}
                     </span>
                   </div>
                   <div className="control-hint">{audioSummary}</div>

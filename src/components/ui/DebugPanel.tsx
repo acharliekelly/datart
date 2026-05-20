@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -66,6 +66,20 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     (isMobile ? " debug-panel--mobile" : "");
 
   const activePanelStyle = isMobile ? undefined : panelStyle;
+  const debugPanelId = "datart-debug-panel";
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handler = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open]);
 
   // HUD closed
   if (hudHidden) return null;
@@ -74,6 +88,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     <div ref={rootRef}>
       <button
         className={toggleClasses}
+        type="button"
+        aria-expanded={open}
+        aria-controls={debugPanelId}
         onClick={() => setOpen((o) => !o)}
       >
         <span className="panel-toggle__dot" />
@@ -82,8 +99,11 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 
       {open && (
         <div 
+          id={debugPanelId}
           className={panelClasses}
           style={activePanelStyle}
+          role="dialog"
+          aria-label="Generation debug"
         >
           <div className="panel-header drag-handle" {...handleProps}>
             <h2 className="panel-title">Generation Debug</h2>

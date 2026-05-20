@@ -14,6 +14,7 @@ import type {
 } from './logic/types';
 
 import { buildGenerationState, } from './logic/generation';
+import { buildAccessibilitySummary } from "./logic/accessibilitySummary";
 import { getBaseTraits, applyIpInfo } from "./logic/fingerprint";
 import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
@@ -37,6 +38,7 @@ const App: React.FC = () => {
   const [hudHidden, setHudHidden] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const complexityDirectionRef = useRef<1 | -1>(1);
+  const animationUserOverrideRef = useRef(false);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
   const isMobile = useIsMobile();
@@ -66,12 +68,36 @@ const App: React.FC = () => {
     toggleAudio,
     setAudioVolume,
   } = useSonification(generationState);
+  const accessibilitySummary = useMemo(
+    () =>
+      buildAccessibilitySummary({
+        generationState,
+        audioState,
+        isAnimating,
+        isAudioEnabled,
+        audioVolume,
+        prefersReducedMotion,
+      }),
+    [
+      audioState,
+      audioVolume,
+      generationState,
+      isAnimating,
+      isAudioEnabled,
+      prefersReducedMotion,
+    ]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setPrefersReducedMotion(query.matches);
+    const update = () => {
+      setPrefersReducedMotion(query.matches);
+      if (query.matches && !animationUserOverrideRef.current) {
+        setIsAnimating(false);
+      }
+    };
 
     update();
     query.addEventListener("change", update);
@@ -169,12 +195,16 @@ const App: React.FC = () => {
     }));
 
   const handleToggleAnimation = () => {
+    animationUserOverrideRef.current = true;
     setIsAnimating((prev) => !prev);
   }
 
 
   return (
     <div className="art-root">
+      <div className="sr-only" role="status" aria-live="polite">
+        {accessibilitySummary}
+      </div>
       <ArtContainer state={generationState} />
       <div className="art-label">
         datart · {generationState.styleId} · client-side generative

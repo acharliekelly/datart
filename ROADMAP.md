@@ -131,6 +131,8 @@ Phase 3B notes:
 
 ## Phase 4: Accessibility And Presentation Polish
 
+Status: first accessibility pass implemented on `feat/a11y`
+
 Priority: medium
 
 Tasks:
@@ -150,6 +152,16 @@ Suggested acceptance checks:
 - Reduced-motion preference disables or softens complexity animation by default.
 - README setup instructions match the current app.
 
+Implemented notes:
+
+- Added `buildAccessibilitySummary()` to describe style, generation mode, complexity, motion state, sound state, audio profile, and palette count.
+- Rendered the summary in an `aria-live` screen-reader-only region.
+- Reduced-motion users start with animation off unless they explicitly turn animation on.
+- MiniHud controls now expose clearer `aria-label` and `aria-pressed` state.
+- Controls and debug toggles now expose `aria-expanded`, `aria-controls`, dialog roles, and Escape-to-close behavior.
+- Added visible focus outlines and larger inner control targets.
+- Unit tests cover the accessibility summary helper.
+
 ## Phase 5: Optional Improvements After The Demo
 
 Priority: lower
@@ -165,7 +177,7 @@ Ideas:
 
 ## Suggested Next Steps
 
-1. Manually test sound start/stop and volume in Chrome, Safari, Firefox, and at least one mobile browser.
-2. Tune each style's sound personality for the demo: orbits, strata, constellation, bubbles, waves, tree, aurora, nebula, and flowfield should be clearly distinguishable.
-3. Add a concise screen-reader summary that includes both visual style and sound state.
+1. Manually test keyboard-only navigation on desktop and mobile-sized layouts.
+2. Test with at least one screen reader and confirm the live summary is useful without being too chatty.
+3. Manually verify reduced-motion startup behavior in the browser.
 4. Do a timed rehearsal on the actual demo machine or a similar laptop, with browser devtools memory/performance open.

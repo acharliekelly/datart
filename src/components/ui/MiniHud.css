@@ -32,6 +32,12 @@
   line-height: 1;
 }
 
+.mini-hud__button:focus-visible,
+.mini-hud__label:focus-visible {
+  outline: 3px solid #facc15;
+  outline-offset: 3px;
+}
+
 .mini-hud__button--arrow {
   font-size: 1.1rem;
 }
