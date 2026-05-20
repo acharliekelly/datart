@@ -3,41 +3,13 @@
 import { STYLES } from "../components/art/styleRegistry";
 import type { StyleId, UserTraits } from "./types";
 
-const IP_BUCKET_STYLES: StyleId[] = [
-  "orbits",
-  "strata",
-  "bubbles",
-  "waves",
-  "fern",
-  "crystal",
-  "tree"
-];
+const STYLE_SELECTION_VERSION = "style-v2";
 
-const BROWSER_STYLES: Record<string, StyleId> = {
-  chrome: "isogrid",
-  edge: "koch",
-  firefox: "flowfield",
-  safari: "nebula",
-  opera: "aurora"
-};
-
-const CONTINENT_STYLES: Record<string, StyleId> = {
-  "NA": "orbits",
-  "SA": "strata",
-  "EU": "lattice",
-  "AF": "nebula",
-  "AS": "aurora",
-  "OC": "bubbles",
-};
-
-const LANGUAGE_STYLES: Record<string, StyleId> = {
-  "en": "orbits",
-  "es": "strata",
-  "fr": "constellation",
-  "de": "lattice",
-  "ja": "waves",
-  "ko": "crystal",
-};
+interface StyleSignal {
+  label: string;
+  value: string;
+  weight: number;
+}
 
 function simpleHash(str: string): number {
   let h = 0;
@@ -56,6 +28,83 @@ function getBrowserFamily(ua: string | null | undefined): string | null {
   if (s.includes("safari/")) return "safari";
   if (s.includes("opr/") || s.includes("opera")) return "opera";
   return null;
+}
+
+function getScreenBucket(traits: UserTraits): string {
+  const shortSide = Math.min(traits.screenWidth, traits.screenHeight);
+  const longSide = Math.max(traits.screenWidth, traits.screenHeight);
+  const orientation = traits.screenWidth >= traits.screenHeight
+    ? "landscape"
+    : "portrait";
+
+  if (longSide <= 0) return "unknown";
+  if (shortSide < 600) return `small-${orientation}`;
+  if (shortSide < 900) return `medium-${orientation}`;
+  return `large-${orientation}`;
+}
+
+function getLanguageFamily(language: string): string {
+  return language.split("-")[0]?.toLowerCase() || "unknown";
+}
+
+function hashToUnitInterval(input: string): number {
+  return simpleHash(input) / 0xffffffff;
+}
+
+function getStyleSignals(traits: UserTraits): StyleSignal[] {
+  const family = getBrowserFamily(traits.userAgent) ?? "unknown";
+  const continent = traits.ipInfo?.continentCode ?? "unknown";
+  const country = traits.ipInfo?.country ?? "unknown";
+  const region = traits.ipInfo?.region ?? "unknown";
+  const city = traits.ipInfo?.city ?? "unknown";
+  const ip = traits.ipInfo?.ip ?? "none";
+  const screen = getScreenBucket(traits);
+  const language = getLanguageFamily(traits.language);
+  const colorScheme = traits.darkMode ? "dark" : "light";
+  const dprBucket = traits.devicePixelRatio >= 2 ? "high-dpr" : "standard-dpr";
+
+  return [
+    {
+      label: "fingerprint",
+      value: JSON.stringify(traits),
+      weight: 6,
+    },
+    {
+      label: "ip",
+      value: ip,
+      weight: traits.ipInfo?.ip ? 2.5 : 0.25,
+    },
+    {
+      label: "geo",
+      value: `${continent}/${country}/${region}/${city}`,
+      weight: traits.ipInfo ? 1.5 : 0.35,
+    },
+    {
+      label: "timezone",
+      value: traits.timeZone || "unknown",
+      weight: 1.25,
+    },
+    {
+      label: "language",
+      value: language,
+      weight: 1,
+    },
+    {
+      label: "browser",
+      value: family,
+      weight: 1,
+    },
+    {
+      label: "screen",
+      value: `${screen}/${dprBucket}`,
+      weight: 0.9,
+    },
+    {
+      label: "color",
+      value: colorScheme,
+      weight: 0.5,
+    },
+  ];
 }
 
 export interface StyleDecision {
@@ -107,71 +156,42 @@ export function chooseStyle(
 }
 
 export function chooseStyleFromFingerprint(traits: UserTraits): StyleDecision {
-  const reasons: string[] = [];
-
-  // 1) IP bucket
-  if (traits.ipInfo?.ip) {
-    const hash = simpleHash(traits.ipInfo.ip);
-    const bucketIdx = hash % IP_BUCKET_STYLES.length;
-    const style = IP_BUCKET_STYLES[bucketIdx];
-
-    reasons.push(
-      `IP bucket: hash(${traits.ipInfo.ip}) >> bucket ${bucketIdx} >> ${style}`
-    );
-
-    return {
-      id: style,
-      reason: reasons.join(" | "),
-    };
-  }
-
-  // 2) Browser family
-  const family = getBrowserFamily(traits.userAgent);
-  if (family && BROWSER_STYLES[family]) {
-    const style = BROWSER_STYLES[family];
-    reasons.push(`Browser: ${family} >> ${style}`);
-
-    return {
-      id: style,
-      reason: reasons.join(" | "),
-    };
-  }
-
-  // 3) Continent (fallback)
-  if (traits.ipInfo?.continentCode && CONTINENT_STYLES[traits.ipInfo.continentCode]) {
-    const style = CONTINENT_STYLES[traits.ipInfo.continentCode];
-    reasons.push(`Continent: ${traits.ipInfo.continentCode} >> ${style}`);
-
-    return {
-      id: style,
-      reason: reasons.join(" | "),
-    };
-  }
-
-  // 4) Language
-  if (traits.language) {
-    const lang = traits.language.split("-")[0].toLocaleLowerCase();
-    if (LANGUAGE_STYLES[lang]) {
-      const style = LANGUAGE_STYLES[lang];
-      reasons.push(`Language: ${lang} >> ${style}`);
-      return {
-        id: style,
-        reason: reasons.join(" | "),
-      };
-    }
-  }
-
-  // Ultimate fallback: hash entire fingerprint
-  const fingerprintString = JSON.stringify(traits);
-  const hash = simpleHash(fingerprintString);
   const allStyleIds = Object.keys(STYLES) as StyleId[];
-  const idx = hash % allStyleIds.length;
-  const style = allStyleIds[idx];
+  const signals = getStyleSignals(traits);
+  const ranked = allStyleIds
+    .map((styleId) => {
+      const score = signals.reduce((sum, signal) => {
+        const hashInput = [
+          STYLE_SELECTION_VERSION,
+          styleId,
+          signal.label,
+          signal.value,
+        ].join("|");
 
-  reasons.push(`Fallback: hash(fingerprint) >> ${style}`);
+        return sum + hashToUnitInterval(hashInput) * signal.weight;
+      }, 0);
+
+      return { styleId, score };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.styleId.localeCompare(b.styleId);
+    });
+
+  const winner = ranked[0];
+  const runnerUp = ranked[1];
+  const signalSummary = signals
+    .filter((signal) => signal.weight >= 1)
+    .map((signal) => signal.label)
+    .join("+");
 
   return {
-    id: style,
-    reason: reasons.join(" | "),
+    id: winner.styleId,
+    reason:
+      `weighted fingerprint score (${signalSummary}) >> ` +
+      `${winner.styleId} ${winner.score.toFixed(3)}` +
+      (runnerUp
+        ? `, runner-up ${runnerUp.styleId} ${runnerUp.score.toFixed(3)}`
+        : ""),
   };
 }

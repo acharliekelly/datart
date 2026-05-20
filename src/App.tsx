@@ -23,6 +23,7 @@ import { useIpInfo } from "./hooks/useIpInfo";
 import { useIsMobile } from "./hooks/useIsMobile";
 import "./App.css";
 
+const STARTING_ANIMATION_STATE = true;
 const NORMAL_ANIMATION_FPS = 12;
 const REDUCED_MOTION_ANIMATION_FPS = 4;
 const NORMAL_COMPLEXITY_SPEED = 24;
@@ -31,7 +32,7 @@ const REDUCED_MOTION_COMPLEXITY_SPEED = 8;
 
 const App: React.FC = () => {
   const [baseTraits] = useState<UserTraits>(() => getBaseTraits());
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(STARTING_ANIMATION_STATE);
   const [hudHidden, setHudHidden] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const complexityDirectionRef = useRef<1 | -1>(1);
