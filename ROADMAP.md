@@ -30,6 +30,8 @@ Suggested acceptance checks:
 
 ## Phase 2: Rewrite Automatic Style Selection
 
+Status: implemented on `feat/style-selection`
+
 Priority: high
 
 Current problem:
@@ -62,6 +64,13 @@ Suggested acceptance checks:
 - A sample matrix of common browsers/timezones/languages produces broad distribution across most registered styles.
 - Style selection is stable for the same traits.
 - Manual style override still works.
+
+Implemented notes:
+
+- `chooseStyleFromFingerprint()` now uses a versioned weighted score across every registered style instead of returning on the first matching rule.
+- Scoring includes full fingerprint, IP, geolocation, timezone, language, browser family, screen bucket, device pixel ratio, and color-scheme preference.
+- Debug output reports the winning style, score, and runner-up.
+- Unit tests cover registered-style validity, deterministic output, and broad distribution across common trait combinations.
 
 ## Phase 3: Add Audio Sonification
 
@@ -140,9 +149,7 @@ Ideas:
 
 ## Suggested Next Steps
 
-1. Fix the small correctness bugs first: IP application, wave transform, lint warning, invalid `"stata"` style ID.
-2. Stabilize animation before adding audio; otherwise audio work will be harder to judge during long-running demos.
-3. Replace style selection with a scored deterministic selector and test it against sample trait sets.
-4. Add the smallest useful Web Audio API implementation: start/stop, volume, and deterministic sound mapping from `GenerationState`.
-5. Do a timed rehearsal on the actual demo machine or a similar laptop, with browser devtools memory/performance open.
-
+1. Manually sample the new automatic style selection across a few devices/browsers.
+2. Open a Phase 2 PR after `npm run ci` passes.
+3. Start Phase 3 audio with a small Web Audio API implementation: start/stop, volume, and deterministic sound mapping from `GenerationState`.
+4. Do a timed rehearsal on the actual demo machine or a similar laptop, with browser devtools memory/performance open.
