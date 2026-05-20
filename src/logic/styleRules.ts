@@ -23,7 +23,7 @@ const BROWSER_STYLES: Record<string, StyleId> = {
 
 const CONTINENT_STYLES: Record<string, StyleId> = {
   "NA": "orbits",
-  "SA": "stata",
+  "SA": "strata",
   "EU": "lattice",
   "AF": "nebula",
   "AS": "aurora",

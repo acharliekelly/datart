@@ -10,6 +10,8 @@ interface FernPoint {
   opacity: number;
 }
 
+const MAX_RENDERED_POINTS = 8000;
+
 function clamp01(x: number): number {
   return Math.max(0, Math.min(1, x));
 }
@@ -64,7 +66,10 @@ const FernArt: React.FC<ArtStyleProps> = ({
     const minIter = 2500;
     const maxIter = 14000;
     const iterations = Math.round(
-      lerp(minIter, maxIter, Math.pow(t, 0.9))
+      Math.min(
+        MAX_RENDERED_POINTS,
+        lerp(minIter, maxIter, Math.pow(t, 0.9))
+      )
     );
 
     const settle = 20; // throw away first few to let fern "settle"

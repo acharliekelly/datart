@@ -15,6 +15,9 @@ interface FlowPath {
   width: number;
 }
 
+const MAX_PATHS = 180;
+const MAX_STEPS_PER_PATH = 50;
+
 function clamp01(x: number) {
   return Math.max(0, Math.min(1, x));
 }
@@ -49,13 +52,15 @@ const FlowFieldArt: React.FC<ArtStyleProps> = ({
     const minPaths = 60;
     const maxPaths = 260;
     const pathCount = Math.round(
-      lerp(minPaths, maxPaths, Math.pow(t, 0.9))
+      Math.min(MAX_PATHS, lerp(minPaths, maxPaths, Math.pow(t, 0.9)))
     );
 
     // steps per path
     const minSteps = 18;
     const maxSteps = 70;
-    const steps = Math.round(lerp(minSteps, maxSteps, Math.pow(t, 1.0)));
+    const steps = Math.round(
+      Math.min(MAX_STEPS_PER_PATH, lerp(minSteps, maxSteps, Math.pow(t, 1.0)))
+    );
 
     // step length
     const stepLen = lerp(0.4, 1.4, 1 - t); // smaller steps at high complexity

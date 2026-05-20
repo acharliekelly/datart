@@ -23,11 +23,17 @@ import { useIpInfo } from "./hooks/useIpInfo";
 import { useIsMobile } from "./hooks/useIsMobile";
 import "./App.css";
 
+const NORMAL_ANIMATION_FPS = 12;
+const REDUCED_MOTION_ANIMATION_FPS = 4;
+const NORMAL_COMPLEXITY_SPEED = 24;
+const REDUCED_MOTION_COMPLEXITY_SPEED = 8;
+
 
 const App: React.FC = () => {
-  const [traits, setTraits] = useState<UserTraits>(() => getBaseTraits());
+  const [baseTraits] = useState<UserTraits>(() => getBaseTraits());
   const [isAnimating, setIsAnimating] = useState(false);
   const [hudHidden, setHudHidden] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const complexityDirectionRef = useRef<1 | -1>(1);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
@@ -41,22 +47,55 @@ const App: React.FC = () => {
     paletteShift: 0,
   });
 
+  const traits = useMemo<UserTraits>(() => {
+    if (!ipInfo) return baseTraits;
+    return applyIpInfo(baseTraits, ipInfo);
+  }, [baseTraits, ipInfo]);
+
   const generationState = useMemo<GenerationState>(
     () => buildGenerationState(traits, options),
       [traits, options]
   );
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setPrefersReducedMotion(query.matches);
+
+    update();
+    query.addEventListener("change", update);
+
+    return () => {
+      query.removeEventListener("change", update);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isAnimating) return;
 
     let frameId: number;
     let lastTime = performance.now();
+    let lastUpdateTime = lastTime;
 
-    const speed = 30;
+    const fps = prefersReducedMotion
+      ? REDUCED_MOTION_ANIMATION_FPS
+      : NORMAL_ANIMATION_FPS;
+    const frameInterval = 1000 / fps;
+    const speed = prefersReducedMotion
+      ? REDUCED_MOTION_COMPLEXITY_SPEED
+      : NORMAL_COMPLEXITY_SPEED;
 
     const step = (timestamp: number) => {
+      frameId = requestAnimationFrame(step);
+
+      if (timestamp - lastUpdateTime < frameInterval) {
+        return;
+      }
+
       const dt = (timestamp - lastTime) / 1000; // seconds
       lastTime = timestamp;
+      lastUpdateTime = timestamp;
 
       setOptions((prev) => {
         const current = prev.complexity ?? 50;
@@ -74,23 +113,20 @@ const App: React.FC = () => {
 
         complexityDirectionRef.current = dir;
 
-        return { ...prev, complexity: next };
+        const roundedNext = Math.round(next);
+        if (Math.round(current) === roundedNext) return prev;
+
+        return { ...prev, complexity: roundedNext };
       });
-      frameId = requestAnimationFrame(step);
     }
 
     frameId = requestAnimationFrame(step);
-
-    if (ipInfo) {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      setTraits((prev) => applyIpInfo(prev, ipInfo));
-    }
 
     return () => {
       cancelAnimationFrame(frameId);
     }
     
-  }, [ipInfo, isAnimating, setOptions]);
+  }, [isAnimating, prefersReducedMotion]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
