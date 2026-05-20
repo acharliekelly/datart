@@ -110,10 +110,6 @@
   opacity: 1;
 }
 
-.drag-handle {
-  cursor: move;
-}
-
 .panel-floating {
   position: absolute;
   z-index: 32;

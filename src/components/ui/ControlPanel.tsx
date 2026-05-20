@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef, type ChangeEvent } from "react";
 import type { Mode, StyleId } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import { useDraggablePanel } from "../../hooks/useDraggablePanel";
 import { STYLES } from "../art/styleRegistry";
 
 import "./ControlPanel.css";
@@ -65,11 +64,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   const rootRef = useRef<HTMLDivElement | null>(null);
   // close when clicking outside toggle+panel
   useClickOutside(rootRef, () => setOpen(false), open && !isMobile);
-
-  const { panelStyle, handleProps } = useDraggablePanel({
-    initialX: 12,
-    initialY: 50,
-  });
 
   const dialValue = manualSeed ?? 50; // 0–100 dial
   const complexityValue = complexity;
@@ -342,19 +336,15 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <div
           id={controlsPanelId}
           className={panelCls}
-          style={panelStyle}
           role="dialog"
           aria-label="DatArt controls"
         >
           <div className="control-body">
-            <div 
-              className="panel-header drag-handle"
-              {...handleProps}
-            >
+            <div className="panel-header">
               <h2 className="panel-title">Controls</h2>
             </div>
           
-            <div className="panel-body panel-floating ">
+            <div className="control-panel__content">
             {/* Mode */}
               <div className="panel-section">
                 <div className="control-row">
@@ -404,7 +394,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                     </select>
                   </div>
                   <div className="control-hint">
-                    Leave as "auto" to use continent / timezone rules.
+                    Leave as "auto" to use weighted fingerprint selection.
                   </div>
                 </div>
               </div>

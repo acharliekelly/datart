@@ -1,7 +1,7 @@
 /* src/components/ui/MiniHud.css */
 .mini-hud {
   position: absolute;
-  top: 4.2rem;
+  top: 0.75rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 35;
@@ -96,10 +96,10 @@
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
 }
 
-/* Tiny tweak so HUD doesn't fight on very small screens */
-@media (max-width: 480px) {
+/* Stack below corner toggles when horizontal space is tight. */
+@media (max-width: 768px) {
   .mini-hud {
-    top: 4.2rem;
+    top: 4rem;
     padding-inline: 0.3rem;
   }
 

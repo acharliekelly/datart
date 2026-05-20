@@ -151,14 +151,10 @@ const AuroraArt: React.FC<ArtStyleProps> = ({
       <div
         style={{
           position: "absolute",
-          left: "50vw",
-          bottom: "-5vh",
-          width: "140vw",
-          height: "40vh",
-          transform: "translateX(-50%)",
+          inset: 0,
           background:
-            "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.3), transparent 60%)",
-          opacity: 0.45,
+            "radial-gradient(ellipse at 50% 105%, rgba(255,255,255,0.22), rgba(148,163,184,0.10) 22%, transparent 58%)",
+          opacity: 0.55,
           mixBlendMode: "screen",
           pointerEvents: "none",
         }}

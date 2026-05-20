@@ -49,7 +49,7 @@ const KochSnowflakeArt: React.FC<ArtStyleProps> = ({
   palette,
   complexity,
 }) => {
-  const { pathData, stroke, fill, background, strokeWidth } = useMemo(() => {
+  const { pathData, stroke, fillA, fillB, fillC, background, strokeWidth } = useMemo(() => {
     const rng = makeRng(seed + 5151);
     const t = clamp01(complexity / 100);
 
@@ -111,18 +111,16 @@ const KochSnowflakeArt: React.FC<ArtStyleProps> = ({
 
     const stroke =
       palette[Math.floor(rng() * palette.length)] || "#ffffff";
-    const fillBase =
-      palette[Math.floor(rng() * palette.length)] || "#22d3ee";
-
-    // subtle fill, mostly transparent
-    const fill = fillBase + "33";
+    const fillA = palette[Math.floor(rng() * palette.length)] || "#22d3ee";
+    const fillB = palette[Math.floor(rng() * palette.length)] || "#a855f7";
+    const fillC = palette[Math.floor(rng() * palette.length)] || "#facc15";
 
     const background =
       "radial-gradient(circle at 50% 130%, rgba(15,23,42,1), #020617 70%)";
 
     const strokeWidth = lerp(0.4, 1.2, 1 - t); // a bit thinner with more detail
 
-    return { pathData, stroke, fill, background, strokeWidth };
+    return { pathData, stroke, fillA, fillB, fillC, background, strokeWidth };
   }, [seed, palette, complexity]);
 
   return (
@@ -143,12 +141,22 @@ const KochSnowflakeArt: React.FC<ArtStyleProps> = ({
           mixBlendMode: "screen",
         }}
       >
+        <defs>
+          <radialGradient id="koch-fill" cx="48%" cy="42%" r="65%">
+            <stop offset="0%" stopColor={fillC} stopOpacity="0.98" />
+            <stop offset="48%" stopColor={fillA} stopOpacity="0.9" />
+            <stop offset="100%" stopColor={fillB} stopOpacity="0.72" />
+          </radialGradient>
+        </defs>
         <path
           d={pathData}
-          fill={fill}
+          fill="url(#koch-fill)"
           stroke={stroke}
-          strokeWidth={strokeWidth}
+          strokeWidth={strokeWidth * 1.6}
           vectorEffect="non-scaling-stroke"
+          style={{
+            filter: `drop-shadow(0 0 20px ${stroke})`,
+          }}
         />
       </svg>
     </div>

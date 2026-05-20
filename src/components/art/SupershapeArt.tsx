@@ -19,7 +19,7 @@ function supershape(theta: number, m: number, n1: number, n2: number, n3: number
 }
 
 const SupershapeArt: React.FC<ArtStyleProps> = ({ seed, palette, complexity }) => {
-  const { pathData, stroke, fill } = useMemo(() => {
+  const { pathData, stroke, fillA, fillB, fillC } = useMemo(() => {
     const rng = makeRng(seed + 606);
     const plex = clamp(complexity / 100);
 
@@ -55,9 +55,11 @@ const SupershapeArt: React.FC<ArtStyleProps> = ({ seed, palette, complexity }) =
 
     // palette selection
     const stroke = palette[Math.floor(rng() * palette.length)];
-    const fill = palette[Math.floor(rng() * palette.length)] + "33";  // low alpha overlay
+    const fillA = palette[Math.floor(rng() * palette.length)] || "#22d3ee";
+    const fillB = palette[Math.floor(rng() * palette.length)] || "#a855f7";
+    const fillC = palette[Math.floor(rng() * palette.length)] || "#facc15";
 
-    return { pathData, stroke, fill };
+    return { pathData, stroke, fillA, fillB, fillC };
   }, [seed, palette, complexity]);
 
   return (
@@ -78,13 +80,23 @@ const SupershapeArt: React.FC<ArtStyleProps> = ({ seed, palette, complexity }) =
           overflow: "visible",
         }}
       >
+        <defs>
+          <radialGradient id="supershape-fill" cx="42%" cy="35%" r="70%">
+            <stop offset="0%" stopColor={fillC} stopOpacity="0.95" />
+            <stop offset="45%" stopColor={fillA} stopOpacity="0.88" />
+            <stop offset="100%" stopColor={fillB} stopOpacity="0.72" />
+          </radialGradient>
+        </defs>
         <path 
           d={pathData}
-          fill={fill}
+          fill="url(#supershape-fill)"
           stroke={stroke}
-          strokeWidth={2}
+          strokeWidth={3}
           vectorEffect="non-scaling-stroke"
-          style={{ mixBlendMode: "screen" }}
+          style={{
+            mixBlendMode: "screen",
+            filter: `drop-shadow(0 0 30px ${stroke})`,
+          }}
         />
       </svg>
     </div>

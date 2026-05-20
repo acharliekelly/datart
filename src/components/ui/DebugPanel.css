@@ -8,8 +8,9 @@
   right: 0.75rem; /* align with Show debug toggle */
   z-index: 30;
 
-  width: 360px;
-  max-height: calc(100vh - 4.5rem);
+  width: min(560px, calc(100vw - 1.5rem));
+  max-width: calc(100vw - 1.5rem);
+  max-height: calc(100vh - 5rem);
   overflow-y: auto;
 
   background: rgba(15, 23, 42, 0.92);
@@ -71,8 +72,35 @@
 
 .debug-value {
   text-align: right;
-  max-width: 180px;
+  max-width: min(320px, 58vw);
   word-break: break-all;
+}
+
+.debug-section-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.8rem;
+  color: #f9fafb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.explain-panel__intro {
+  margin-top: 0.4rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.explain-panel__intro p {
+  margin: 0;
+  color: #f9fafb;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.explain-panel__intro p + p {
+  margin-top: 0.65rem;
 }
 
 .debug-palette {

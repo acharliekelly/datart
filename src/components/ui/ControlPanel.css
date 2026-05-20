@@ -22,11 +22,17 @@
   border-radius: 0.75rem;
   background: rgba(15, 23, 42, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.7);
-  max-width: 340px;   /* mobile width */
+  max-width: min(640px, calc(100vw - 1.5rem));
   backdrop-filter: blur(6px);
 }
 .control-panel--desktop {
-  max-width: 500px !important;
+  position: absolute;
+  top: 4rem;
+  left: 0.75rem;
+  z-index: 32;
+  width: min(640px, calc(100vw - 1.5rem));
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
 }
 
 .control-panel--floating {
@@ -34,6 +40,10 @@
   top: 60px;        /* initial default, overridden by inline left/top */
   left: 16px;
   z-index: 31;
+}
+
+.control-panel__content {
+  display: block;
 }
 
 .control-title {
