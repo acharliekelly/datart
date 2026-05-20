@@ -137,7 +137,7 @@ npm run test
 ```
 npm run ci
 ```
-This runs lint, unit tests, and the production build. Use this before pushing to `main`, since Netlify deploys from that branch.
+This runs lint, TypeScript type-checking for app and test files, unit tests, and the production build. Use this before pushing to `main`, since Netlify deploys from that branch.
 
 ### Preview the production build
 ```
