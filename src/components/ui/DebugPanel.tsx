@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import { useDraggablePanel } from "../../hooks/useDraggablePanel";
 import './panel.css';
 import './DebugPanel.css';
 
@@ -35,27 +34,11 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   const ip = state.traits.ipInfo;
   const isDev = useIsDev();
 
-  const panelWidth = 360;
-  const margin = 12;
-
-  const initialX = typeof window !== "undefined"
-    ? Math.max(margin, window.innerWidth - panelWidth - margin)
-    : 1000; // fallback
-
-  const { panelStyle, handleProps } = useDraggablePanel({
-    initialX,
-    initialY: 60,
-    bounds: {
-      margin,
-      panelWidth,
-      panelHeight: 400, // rough, for clamping
-    }
-  })
-
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
+  const browserName = getBrowserName(state.traits.userAgent);
 
-  const toggleLabel = open ? "Hide debug" : "Show debug";
+  const toggleLabel = open ? "Hide explanation" : "Show explanation";
   const toggleClasses =
     "panel-toggle panel-toggle--debug" +
     (open ? "" : " panel-toggle--off") +
@@ -65,7 +48,6 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     (open ? " debug-panel--visible" : "") +
     (isMobile ? " debug-panel--mobile" : "");
 
-  const activePanelStyle = isMobile ? undefined : panelStyle;
   const debugPanelId = "datart-debug-panel";
 
   useEffect(() => {
@@ -101,65 +83,28 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
         <div 
           id={debugPanelId}
           className={panelClasses}
-          style={activePanelStyle}
           role="dialog"
-          aria-label="Generation debug"
+          aria-label="Art explanation"
         >
-          <div className="panel-header drag-handle" {...handleProps}>
-            <h2 className="panel-title">Generation Debug</h2>
+          <div className="panel-header">
+            <h2 className="panel-title">Explain Art</h2>
           </div>
 
-          <div className="panel-section">
-            <div className="panel-row">
-              <span className="panel-label">Mode</span>
-              <span className="debug-value">{mode}</span>
-            </div>
-
-            <div className="panel-row">
-              <span className="panel-label">Seed source</span>
-              <span className="debug-value">{state.seedSource}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Base seed</span>
-              <span className="debug-value">{state.baseSeed}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Effective seed</span>
-              <span className="debug-value">{state.seed}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Complexity</span>
-              <span className="debug-value">{Math.round(state.complexity)}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Palette shift</span>
-              <span className="debug-value">
-                {state.paletteShift}
-              </span>
-            </div>
-          </div>
-          <div className="panel-section">
-            <div className="panel-row">
-              <span className="panel-label">Style</span>
-              <span className="debug-value">{state.styleId}</span>
-            </div>
-            {state.styleReason && (
-              <div className="panel-row">
-                <span className="panel-label">Style reason</span>
-                <span className="debug-value">
-                  {state.styleReason}
-                </span>
-              </div>
-            )}
-            <div className="panel-row">
-              <span className="panel-label">IP loaded</span>
-              <span className="debug-value">
-                {ipLoaded ? "yes" : "no"}
-              </span>
-            </div>
+          <div className="explain-panel__intro">
+            <p>
+              DatArt turns browser and location traits into a deterministic
+              fingerprint. That fingerprint becomes the seed for this visual
+              style, palette, complexity, and sound profile.
+            </p>
+            <p>
+              This version selected <strong>{state.styleId}</strong> at
+              complexity <strong>{Math.round(state.complexity)}</strong>.
+              {state.styleReason ? ` ${state.styleReason}` : ""}
+            </p>
           </div>
 
-          <div className="panel-section">
+          <div className="panel-section explain-panel__traits">
+            <h3 className="debug-section-title">Fingerprint components</h3>
             <div className="panel-row">
               <span className="panel-label">Time zone</span>
               <span className="debug-value">
@@ -175,18 +120,9 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             <div className="panel-row">
               <span className="panel-label">User agent</span>
               <span className="debug-value">
-                {short(state.traits.userAgent)}
+                {browserName}
               </span>
             </div>
-            <div className="panel-row">
-              <span className="panel-label">Fingerprint</span>
-              <div className="debug-value">
-                {short(state.fingerprint)}
-              </div>
-            </div>
-          </div>
-
-          <div className="panel-section">
             <div className="panel-row">
               <span className="panel-label">IP</span>
               <span className="debug-value">{ip?.ip ?? "—"}</span>
@@ -218,8 +154,42 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             </div>
           )}
 
-          {/* Palette */}
           <div className="panel-section">
+            <h3 className="debug-section-title">Debug details</h3>
+            <div className="panel-row">
+              <span className="panel-label">Mode</span>
+              <span className="debug-value">{mode}</span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">Seed source</span>
+              <span className="debug-value">{state.seedSource}</span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">Base seed</span>
+              <span className="debug-value">{state.baseSeed}</span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">Effective seed</span>
+              <span className="debug-value">{state.seed}</span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">Palette shift</span>
+              <span className="debug-value">
+                {state.paletteShift}
+              </span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">IP loaded</span>
+              <span className="debug-value">
+                {ipLoaded ? "yes" : "no"}
+              </span>
+            </div>
+            <div className="panel-row">
+              <span className="panel-label">Fingerprint</span>
+              <div className="debug-value">
+                {short(state.fingerprint, 120)}
+              </div>
+            </div>
             <div className="panel-row">
               <span className="panel-label">Palette</span>
               <span className="panel-value debug-palette">
@@ -234,62 +204,6 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
               </span>
             </div>
           </div>  
-
-          {/* Explanation section */}
-          <div className="panel-section">
-            <div className="panel-row">
-                <span className="panel-label">Explain this Art</span>
-                <span className="debug-value"></span>
-            </div>
-            <ul className="debug-list">
-              <li className="debug-list-item">
-                <strong>Fingerprint &gt; base seed:</strong>{" "}
-                We hash your browser/IP traits into a fingerprint, then into{" "}
-                <code>{state.baseSeed}</code>.
-              </li>
-
-              <li className="debug-list-item">
-                <strong>Effective seed:</strong>{" "}
-                {state.seedSource === "manualDial" ? (
-                  <>
-                    Manual mode is on; seed dial <code>{state.seedDial}</code>{" "}
-                    perturbs the fingerprint to produce{" "}
-                    <code>{state.seed}</code>.
-                  </>
-                ) : (
-                  <>
-                    Auto mode uses the base seed directly as{" "}
-                    <code>{state.seed}</code>.
-                  </>
-                )}
-              </li>
-
-              <li className="debug-list-item">
-                <strong>Style:</strong>{" "}
-                <code>{state.styleId}</code>
-                {state.styleReason ? (
-                  <>
-                    {" "}
-                    &gt; {state.styleReason}
-                  </>
-                ) : null}
-              </li>
-
-              <li className="debug-list-item">
-                <strong>Complexity:</strong>{" "}
-                <code>{Math.round(state.complexity)}</code>{" "}
-                (higher = more rings / bands / stars, depending on style)
-              </li>
-
-              <li className="debug-list-item">
-                <strong>Palette:</strong>{" "}
-                base palette from the seed, rotated by{" "}
-                <code>{state.paletteShift}</code> step 
-                {state.paletteShift === 1 ? "" : "s"}.
-              </li>
-            </ul>
-
-          </div>  
         </div>
       )}
     </div>
@@ -297,3 +211,13 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
 };
 
 export default DebugPanel;
+
+function getBrowserName(userAgent: string): string {
+  const ua = userAgent.toLowerCase();
+  if (ua.includes("edg/")) return "Edge";
+  if (ua.includes("opr/") || ua.includes("opera")) return "Opera";
+  if (ua.includes("firefox/")) return "Firefox";
+  if (ua.includes("chrome/")) return "Chrome";
+  if (ua.includes("safari/")) return "Safari";
+  return "Unknown browser";
+}

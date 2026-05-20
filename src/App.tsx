@@ -230,14 +230,6 @@ const App: React.FC = () => {
         isMobile={isMobile}
         hudHidden={hudHidden}
       />
-      <DebugPanel 
-        state={generationState} 
-        ipLoaded={ipLoaded}
-        mode={options.mode} 
-        ipError={ipError}
-        isMobile={isMobile}
-        hudHidden={hudHidden}
-      />
       <MiniHud
         mode={options.mode}
         manualStyle={options.manualStyle ?? null}
@@ -248,6 +240,14 @@ const App: React.FC = () => {
         onStyleChange={handleStyleChange}
         onToggleAnimation={handleToggleAnimation}
         onToggleAudio={toggleAudio}
+      />
+      <DebugPanel 
+        state={generationState} 
+        ipLoaded={ipLoaded}
+        mode={options.mode} 
+        ipError={ipError}
+        isMobile={isMobile}
+        hudHidden={hudHidden}
       />
     </div>
   );
