@@ -8,9 +8,11 @@ interface MiniHudProps {
   manualStyle: StyleId | null;
   effectiveStyle: StyleId;
   isAnimating: boolean;
+  isAudioEnabled: boolean;
   onModeChange: (mode: Mode) => void;
   onStyleChange: (style: StyleId | null) => void;
   onToggleAnimation: () => void;
+  onToggleAudio: () => void | Promise<void>;
 }
 
 const STYLE_IDS: StyleId[] = Object.values(STYLES).map((s) => s.id);
@@ -27,9 +29,11 @@ const MiniHud: React.FC<MiniHudProps> = ({
   manualStyle,
   effectiveStyle,
   isAnimating,
+  isAudioEnabled,
   onModeChange,
   onStyleChange,
   onToggleAnimation,
+  onToggleAudio,
 }) => {
   // which style do we *show*?
   // in manual mode, show manualStyle if set
@@ -49,7 +53,10 @@ const MiniHud: React.FC<MiniHudProps> = ({
     onStyleChange(nextId);
   }
 
-  const rootClass = "mini-hud" + (isAnimating ? " mini-hud--animating" : "");
+  const rootClass =
+    "mini-hud" +
+    (isAnimating ? " mini-hud--animating" : "") +
+    (isAudioEnabled ? " mini-hud--audio-on" : "");
 
   return (
     <div className={rootClass}>
@@ -76,6 +83,19 @@ const MiniHud: React.FC<MiniHudProps> = ({
       >
         <span className="mini-hud__dot" />
         <span className="mini-hud__text">{labelText}</span>
+      </button>
+
+      <button
+        type="button"
+        className="mini-hud__button mini-hud__button--sound"
+        aria-pressed={isAudioEnabled}
+        aria-label={isAudioEnabled ? "Stop sound" : "Start sound"}
+        onClick={() => {
+          void onToggleAudio();
+        }}
+        title={isAudioEnabled ? "Stop sound" : "Start sound"}
+      >
+        Sound
       </button>
 
       {/* Next button */}

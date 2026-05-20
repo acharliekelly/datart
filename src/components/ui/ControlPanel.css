@@ -111,6 +111,10 @@
   color: #6b7280;
 }
 
+.control-hint--error {
+  color: #fca5a5;
+}
+
 .control-range {
   flex: 1;
 }

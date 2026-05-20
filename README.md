@@ -6,6 +6,7 @@ Every visitor gets a unique artwork generated from:
 - browser traits
 - IP/geolocation info
 - randomness derived from a deterministic seed
+- deterministic sound derived from the same seed and style inputs
 - optional manual controls (sliders, style selectors, palette shuffling)
 
 …and nothing leaves your device. No server, no backend, no AI APIs — just CSS, JavaScript, and vibes.
@@ -47,6 +48,14 @@ Flip a toggle to override auto mode:
 
 A simple animation toggle smoothly sweeps complexity from 0 to 100 to 0, creating a screensaver effect across all styles.
 
+### 🔊 Sonification
+
+The Sound control starts a Web Audio interpretation of the current artwork. Style, seed, palette, and complexity influence the tempo, notes, waveform, brightness, stereo movement, echo, rhythm, and chord/drone accents.
+
+Audio profiles are designed to loosely match the visual language: orbits pulse, strata drones, constellations sparkle, grids tick, branches split into short echoes, and flow-style visuals drift.
+
+Audio starts only after a button press, matching browser autoplay rules.
+
 ### 🪩 Debug Panel
 
 Shows:
@@ -81,7 +90,9 @@ src/
       DebugPanel.tsx
   hooks/
     useIpInfo.ts
+    useSonification.ts
   logic/
+    audioMapping.ts
     fingerprint.ts
     generation.ts
     rng.ts
@@ -97,6 +108,7 @@ src/
 4. Build a GenerationState object
 5. ArtContainer selects the correct style component
 6. Style component renders with CSS + transforms
+7. Optional sonification maps GenerationState to Web Audio notes
 
 ## 🧪 Development
 

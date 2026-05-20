@@ -21,6 +21,7 @@ import ArtContainer from "./components/ui/ArtContainer";
 import MiniHud from "./components/ui/MiniHud";
 import { useIpInfo } from "./hooks/useIpInfo";
 import { useIsMobile } from "./hooks/useIsMobile";
+import { useSonification } from "./hooks/useSonification";
 import "./App.css";
 
 const STARTING_ANIMATION_STATE = true;
@@ -57,6 +58,14 @@ const App: React.FC = () => {
     () => buildGenerationState(traits, options),
       [traits, options]
   );
+  const {
+    audioState,
+    isAudioEnabled,
+    audioVolume,
+    audioError,
+    toggleAudio,
+    setAudioVolume,
+  } = useSonification(generationState);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -182,6 +191,12 @@ const App: React.FC = () => {
         onShufflePalette={handleShufflePalette}
         isAnimating={isAnimating}
         onToggleAnimation={handleToggleAnimation}
+        isAudioEnabled={isAudioEnabled}
+        audioVolume={audioVolume}
+        audioSummary={audioState.summary}
+        audioError={audioError}
+        onToggleAudio={toggleAudio}
+        onAudioVolumeChange={setAudioVolume}
         isMobile={isMobile}
         hudHidden={hudHidden}
       />
@@ -198,9 +213,11 @@ const App: React.FC = () => {
         manualStyle={options.manualStyle ?? null}
         effectiveStyle={generationState.styleId}
         isAnimating={isAnimating}
+        isAudioEnabled={isAudioEnabled}
         onModeChange={handleModeChange}
         onStyleChange={handleStyleChange}
         onToggleAnimation={handleToggleAnimation}
+        onToggleAudio={toggleAudio}
       />
     </div>
   );
