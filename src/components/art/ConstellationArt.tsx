@@ -19,6 +19,11 @@ interface ConstellationLine {
   id: string;
   a: ConstellationPoint;
   b: ConstellationPoint;
+  colorA: string;
+  colorB: string;
+  opacity: number;
+  thickness: number;
+  glow: number;
 }
 
 const ConstellationArt: React.FC<ArtStyleProps> = ({
@@ -55,7 +60,16 @@ const ConstellationArt: React.FC<ArtStyleProps> = ({
       if (rng() < baseConnectProb) {
         const j = i + 1 + Math.floor(rng() * 3);
         if (j < starCount) {
-          ln.push({ id: `${i}-${j}`, a: pts[i], b: pts[j] });
+          ln.push({
+            id: `${i}-${j}`,
+            a: pts[i],
+            b: pts[j],
+            colorA: pts[i].color,
+            colorB: pts[j].color,
+            opacity: lerp(0.35, 0.82, plex) * (0.75 + rng() * 0.35),
+            thickness: lerp(1, 2.6, plex) * (0.8 + rng() * 0.4),
+            glow: lerp(8, 22, plex) * (0.7 + rng() * 0.5),
+          });
         }
       }
     }
@@ -83,11 +97,14 @@ const ConstellationArt: React.FC<ArtStyleProps> = ({
           left: `${ln.a.x}vw`,
           top: `${ln.a.y}vh`,
           width: `${length}vw`,
-          height: "1px",
-          background: "rgba(255,255,255,0.33)",
+          height: `${ln.thickness}px`,
+          background: `linear-gradient(90deg, ${ln.colorA}, rgba(255,255,255,0.85), ${ln.colorB})`,
+          opacity: ln.opacity,
           transformOrigin: "0 0",
           transform: `rotate(${angle}deg)`,
           mixBlendMode: "screen",
+          boxShadow: `0 0 ${ln.glow}px ${ln.colorA}, 0 0 ${ln.glow * 0.65}px ${ln.colorB}`,
+          borderRadius: "999px",
         };
 
         return <div key={ln.id} style={style} />;
