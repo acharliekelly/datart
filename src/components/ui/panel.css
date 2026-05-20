@@ -8,13 +8,15 @@
   align-items: center;
   gap: 0.35rem;
 
-  padding: 0.25rem 0.75rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.6rem 0.9rem;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.7);
   background: rgba(15, 23, 42, 0.92);
   color: #e5e7eb;
-  font-size: 0.75rem;
-  line-height: 1;
+  font-size: 0.875rem;
+  line-height: 1.2;
   cursor: pointer;
 
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
@@ -31,8 +33,8 @@
 
 /* Tiny status dot */
 .panel-toggle__dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   background: #22c55e;
   box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
@@ -108,7 +110,7 @@
 .panel-floating {
   position: absolute;
   z-index: 32;
-  top: 2.8rem;
+  top: 4rem;
   left: 0.75rem;
   /* width/height tuned for mobile; desktop can override with inline style */
   max-width: calc(100vw - 1.5rem);

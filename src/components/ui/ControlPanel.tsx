@@ -110,7 +110,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     "control-panel" +
     (isDev ? " dev-mode" : "") +
     (open ? " control-panel--visible" : "") +
-    (isMobile ? "" : "control-panel--desktop");
+    (isMobile ? "" : " control-panel--desktop");
 
   if (hudHidden) {
     return null;

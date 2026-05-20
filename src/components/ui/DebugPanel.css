@@ -4,7 +4,7 @@
 
 .debug-panel--floating {
   position: absolute;
-  top: 2.5rem;  /* below the toggle */
+  top: 4rem;  /* below the toggle */
   right: 0.75rem; /* align with Show debug toggle */
   z-index: 30;
 
@@ -16,6 +16,14 @@
   border: 1px solid rgba(148, 163, 184, 0.6);
   border-radius: 12px;
   backdrop-filter: blur(8px);
+}
+
+.debug-panel--mobile {
+  left: 0.75rem;
+  right: 0.75rem;
+  width: auto;
+  max-width: none;
+  max-height: calc(100vh - 5rem);
 }
 
 .debug-panel--floating h2 {
