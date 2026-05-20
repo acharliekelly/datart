@@ -21,6 +21,8 @@ interface CellRect {
   borderColor: string;
 }
 
+const MAX_RESOLUTION = 28;
+
 function clamp01(x: number) {
   return Math.max(0, Math.min(1, x));
 }
@@ -64,7 +66,9 @@ const VoronoiBloomArt: React.FC<ArtStyleProps> = ({
     //
     const minRes = 12;
     const maxRes = 35;
-    const resolution = Math.round(lerp(minRes, maxRes, Math.pow(t, 1.1)));
+    const resolution = Math.round(
+      Math.min(MAX_RESOLUTION, lerp(minRes, maxRes, Math.pow(t, 1.1)))
+    );
 
     const cellW = 100 / resolution; // in vh/vw-like %
     const cellH = 100 / resolution;

@@ -14,6 +14,7 @@ interface Branch {
   opacity: number;
 }
 
+const MAX_DEPTH = 7;
 
 function clamp01(x: number) {
   return Math.max(0, Math.min(1, x));
@@ -37,6 +38,7 @@ const RecursiveTreeArt: React.FC<ArtStyleProps> = ({
     const minDepth = 3;
     const maxDepth = 8;
     const depth = Math.round(lerp(minDepth, maxDepth, Math.pow(t, 0.8)));
+    const cappedDepth = Math.min(MAX_DEPTH, depth);
 
     // branch angle spread (degrees)
     const minSpread = 16;
@@ -100,7 +102,7 @@ const RecursiveTreeArt: React.FC<ArtStyleProps> = ({
         opacity,
       });
 
-      if (level >= depth) continue;
+      if (level >= cappedDepth) continue;
 
       // how many children? 2–3 with some randomness
       const childCount = rng() < 0.2 ? 3 : 2;

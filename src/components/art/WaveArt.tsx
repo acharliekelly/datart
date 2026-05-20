@@ -102,7 +102,7 @@ const WaveArt: React.FC<ArtStyleProps> = ({
             height: `${b.thickness}px`,
             background: b.color,
             opacity: b.opacity,
-            transform: `translateX(${b.offsetX}vw rotate(${b.angle}deg))`,
+            transform: `translateX(${b.offsetX}vw) rotate(${b.angle}deg)`,
             mixBlendMode: "screen",
             boxShadow: `0 0 ${b.blur}px rgba(0,0,0,0.4)`,
           };

@@ -1,7 +1,7 @@
 /* src/components/ui/MiniHud.css */
 .mini-hud {
   position: absolute;
-  top: 2.4rem;
+  top: 4.2rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 35;
@@ -21,12 +21,14 @@
 }
 
 .mini-hud__button {
+  min-width: 44px;
+  min-height: 44px;
   border: none;
   background: transparent;
   color: #e5e7eb;
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 0.1rem 0.35rem;
+  padding: 0.35rem 0.6rem;
   line-height: 1;
 }
 
@@ -35,12 +37,13 @@
 }
 
 .mini-hud__label {
+  min-height: 44px;
   border: none;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
 
-  padding: 0.15rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
 
   background: rgba(15, 23, 42, 0.98);
@@ -75,7 +78,7 @@
 /* Tiny tweak so HUD doesn't fight on very small screens */
 @media (max-width: 480px) {
   .mini-hud {
-    top: 2.6rem;
+    top: 4.2rem;
     padding-inline: 0.3rem;
   }
 

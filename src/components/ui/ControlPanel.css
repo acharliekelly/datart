@@ -164,7 +164,7 @@
 @media (max-width: 768px) {
   .control-panel--mobile {
     position: absolute;
-    top: 2.8rem;        /* below top-left toggle + MiniHud */
+    top: 4rem;        /* below top-left toggle */
     left: 0.75rem;
     right: 0.75rem;
 

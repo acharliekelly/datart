@@ -25,6 +25,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   ipLoaded,
   mode,
   ipError,
+  isMobile = false,
   hudHidden
 }) => {
   const [open, setOpen] = useState(false);
@@ -59,8 +60,12 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     "panel-toggle panel-toggle--debug" +
     (open ? "" : " panel-toggle--off") +
     (isDev ? " panel-toggle--dev" : "");
-  const panelClasses = "debug-panel panel-body debug-panel--floating" +
-    (open ? " debug-panel--visible" : "");
+  const panelClasses =
+    "debug-panel panel-body debug-panel--floating" +
+    (open ? " debug-panel--visible" : "") +
+    (isMobile ? " debug-panel--mobile" : "");
+
+  const activePanelStyle = isMobile ? undefined : panelStyle;
 
   // HUD closed
   if (hudHidden) return null;
@@ -78,7 +83,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
       {open && (
         <div 
           className={panelClasses}
-          style={panelStyle}
+          style={activePanelStyle}
         >
           <div className="panel-header drag-handle" {...handleProps}>
             <h2 className="panel-title">Generation Debug</h2>

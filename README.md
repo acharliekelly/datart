@@ -123,6 +123,22 @@ Output goes to:
 dist/
 ```
 
+### Run unit tests
+```
+npm run test:run
+```
+
+For interactive watch mode:
+```
+npm run test
+```
+
+### Run local CI before pushing
+```
+npm run ci
+```
+This runs lint, unit tests, and the production build. Use this before pushing to `main`, since Netlify deploys from that branch.
+
 ### Preview the production build
 ```
 npm run preview

@@ -24,6 +24,8 @@ interface Link {
   color: string;
 }
 
+const MAX_NODES = 55;
+
 const LatticeArt: React.FC<ArtStyleProps> = ({
   seed,
   palette,
@@ -37,7 +39,7 @@ const LatticeArt: React.FC<ArtStyleProps> = ({
     const minNodes = 12;
     const maxNodes = 70;
     const nodeCount = Math.round(
-      lerp(minNodes, maxNodes, Math.pow(t, 0.8))
+      Math.min(MAX_NODES, lerp(minNodes, maxNodes, Math.pow(t, 0.8)))
     );
 
     // connection radius (in svg units)
