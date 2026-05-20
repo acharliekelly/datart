@@ -28,6 +28,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   hudHidden
 }) => {
   const [open, setOpen] = useState(false);
+  const [debugOpen, setDebugOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   useClickOutside(rootRef, () => setOpen(false), open);
 
@@ -49,6 +50,7 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
     (isMobile ? " debug-panel--mobile" : "");
 
   const debugPanelId = "datart-debug-panel";
+  const debugDetailsId = "datart-debug-details";
 
   useEffect(() => {
     if (!open) return;
@@ -155,55 +157,69 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
           )}
 
           <div className="panel-section">
-            <h3 className="debug-section-title">Debug details</h3>
-            <div className="panel-row">
-              <span className="panel-label">Mode</span>
-              <span className="debug-value">{mode}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Seed source</span>
-              <span className="debug-value">{state.seedSource}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Base seed</span>
-              <span className="debug-value">{state.baseSeed}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Effective seed</span>
-              <span className="debug-value">{state.seed}</span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Palette shift</span>
-              <span className="debug-value">
-                {state.paletteShift}
-              </span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">IP loaded</span>
-              <span className="debug-value">
-                {ipLoaded ? "yes" : "no"}
-              </span>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Fingerprint</span>
-              <div className="debug-value">
-                {short(state.fingerprint, 120)}
+            <button
+              type="button"
+              className="debug-details-toggle"
+              aria-expanded={debugOpen}
+              aria-controls={debugDetailsId}
+              onClick={() => setDebugOpen((value) => !value)}
+            >
+              {debugOpen ? "Hide debug details" : "Show debug details"}
+            </button>
+
+            {debugOpen && (
+              <div id={debugDetailsId} className="debug-details">
+                <h3 className="debug-section-title">Debug details</h3>
+                <div className="panel-row">
+                  <span className="panel-label">Mode</span>
+                  <span className="debug-value">{mode}</span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Seed source</span>
+                  <span className="debug-value">{state.seedSource}</span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Base seed</span>
+                  <span className="debug-value">{state.baseSeed}</span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Effective seed</span>
+                  <span className="debug-value">{state.seed}</span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Palette shift</span>
+                  <span className="debug-value">
+                    {state.paletteShift}
+                  </span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">IP loaded</span>
+                  <span className="debug-value">
+                    {ipLoaded ? "yes" : "no"}
+                  </span>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Fingerprint</span>
+                  <div className="debug-value">
+                    {short(state.fingerprint, 120)}
+                  </div>
+                </div>
+                <div className="panel-row">
+                  <span className="panel-label">Palette</span>
+                  <span className="panel-value debug-palette">
+                    {state.palette.map((color, idx) => (
+                      <span
+                        key={idx}
+                        className="debug-swatch"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="panel-row">
-              <span className="panel-label">Palette</span>
-              <span className="panel-value debug-palette">
-                {state.palette.map((color, idx) => (
-                  <span
-                    key={idx}
-                    className="debug-swatch"
-                    style={{ backgroundColor: color }}
-                    title={color}
-                  />
-                ))}
-              </span>
-            </div>
-          </div>  
+            )}
+          </div>
         </div>
       )}
     </div>

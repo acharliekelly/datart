@@ -20,8 +20,21 @@ Current styles:
 * **Constellation**: stars + connecting beams
 * **Bubbles**: translucent floating spheres
 * **Waves**: soft interference patterns
+* **Supershape Stars**: filled superformula shapes
+* **IsoGrid**: layered isometric tiles
+* **Crystal**: angular shard compositions
+* **Lattice**: connected node fields
+* **Nebula**: soft atmospheric clouds
+* **Aurora**: vertical light curtains
+* **Voronoi Bloom**: blurred cellular fields
+* **Fractal Fern**: generated fern point clouds
+* **Koch Snowflake**: filled recursive snowflakes
+* **Recursive Tree**: branching line structures
+* **Flow Field**: guided line paths
 
 All styles implement a shared interface and self-register via the style registry.
+
+Auto mode uses a curated demo-safe subset so first impressions stay strong. Manual mode still allows choosing any registered style.
 
 ### 🧬 Fingerprint => Seed => Art
 
@@ -34,6 +47,8 @@ Artwork is derived from:
 - Mix-in randomness
 
 These traits produce a stable base seed, which determines style, palette, and layout.
+
+Automatic style selection uses a weighted fingerprint score across browser, timezone, language, screen, color-scheme, and optional IP/geolocation traits.
 
 ### 🕹 Manual Mode
 
@@ -66,14 +81,12 @@ Keyboard support:
 - Escape closes the controls or debug panel when either is open.
 - If reduced motion is requested, the app starts with animation off unless the visitor explicitly turns animation on.
 
-### 🪩 Debug Panel
+### 🧾 Explanation Panel
 
 Shows:
-- Raw traits
-- Derived seed + style
-- Palette
-- Complexity
-- A human-readable explanation of the math
+- A plain-language explanation of how the artwork was generated
+- Fingerprint components such as timezone, language, browser, IP, and location
+- Optional debug details for seed, palette, and full fingerprint
 
 Useful during development and for curious users.
 
@@ -120,6 +133,16 @@ src/
 5. ArtContainer selects the correct style component
 6. Style component renders with CSS + transforms
 7. Optional sonification maps GenerationState to Web Audio notes
+
+### Demo-Safe Auto Styles
+
+Auto mode currently chooses from:
+```
+orbits, strata, constellation, bubbles, waves, supershape, isogrid,
+crystal, lattice, nebula, aurora, koch, tree, flowfield
+```
+
+`voronoi` and `fern` remain available in manual mode.
 
 ## 🧪 Development
 

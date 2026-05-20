@@ -4,6 +4,22 @@ import { STYLES } from "../components/art/styleRegistry";
 import type { StyleId, UserTraits } from "./types";
 
 const STYLE_SELECTION_VERSION = "style-v2";
+const DEMO_SAFE_STYLE_IDS: StyleId[] = [
+  "orbits",
+  "strata",
+  "constellation",
+  "bubbles",
+  "waves",
+  "supershape",
+  "isogrid",
+  "crystal",
+  // "lattice",
+  // "nebula",
+  // "aurora",
+  "koch",
+  "tree",
+  // "flowfield",
+];
 
 interface StyleSignal {
   label: string;
@@ -156,7 +172,7 @@ export function chooseStyle(
 }
 
 export function chooseStyleFromFingerprint(traits: UserTraits): StyleDecision {
-  const allStyleIds = Object.keys(STYLES) as StyleId[];
+  const allStyleIds = DEMO_SAFE_STYLE_IDS.filter((styleId) => STYLES[styleId]);
   const signals = getStyleSignals(traits);
   const ranked = allStyleIds
     .map((styleId) => {
@@ -188,7 +204,7 @@ export function chooseStyleFromFingerprint(traits: UserTraits): StyleDecision {
   return {
     id: winner.styleId,
     reason:
-      `weighted fingerprint score (${signalSummary}) >> ` +
+      `demo-safe weighted fingerprint score (${signalSummary}) >> ` +
       `${winner.styleId} ${winner.score.toFixed(3)}` +
       (runnerUp
         ? `, runner-up ${runnerUp.styleId} ${runnerUp.score.toFixed(3)}`

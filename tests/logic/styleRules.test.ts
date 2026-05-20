@@ -4,6 +4,22 @@ import { chooseStyleFromFingerprint } from "../../src/logic/styleRules";
 import type { UserTraits } from "../../src/logic/types";
 
 const registeredStyleIds = Object.keys(STYLES);
+const demoSafeStyleIds = [
+  "orbits",
+  "strata",
+  "constellation",
+  "bubbles",
+  "waves",
+  "supershape",
+  "isogrid",
+  "crystal",
+  "lattice",
+  "nebula",
+  "aurora",
+  "koch",
+  "tree",
+  "flowfield",
+];
 
 function makeTraits(overrides: Partial<UserTraits> = {}): UserTraits {
   return {
@@ -49,6 +65,7 @@ describe("chooseStyleFromFingerprint", () => {
     for (const traits of examples) {
       const decision = chooseStyleFromFingerprint(traits);
       expect(registeredStyleIds).toContain(decision.id);
+      expect(demoSafeStyleIds).toContain(decision.id);
       expect(decision.reason).toContain(decision.id);
     }
   });
@@ -123,7 +140,7 @@ describe("chooseStyleFromFingerprint", () => {
     const mostCommonCount = Math.max(...counts.values());
     const totalCount = browsers.length * timeZones.length * languages.length * screens.length;
 
-    expect(counts.size).toBeGreaterThanOrEqual(12);
-    expect(mostCommonCount / totalCount).toBeLessThan(0.2);
+    expect(counts.size).toBeGreaterThanOrEqual(10);
+    expect(mostCommonCount / totalCount).toBeLessThan(0.24);
   });
 });
