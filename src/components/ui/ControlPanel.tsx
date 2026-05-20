@@ -28,6 +28,12 @@ interface ControlPanelProps {
   onShufflePalette: () => void;
   isAnimating: boolean;
   onToggleAnimation: () => void;
+  isAudioEnabled: boolean;
+  audioVolume: number;
+  audioSummary: string;
+  audioError: string | null;
+  onToggleAudio: () => void | Promise<void>;
+  onAudioVolumeChange: (volume: number) => void;
   isMobile?: boolean;
   hudHidden?: boolean;
 }
@@ -44,6 +50,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   onShufflePalette,
   isAnimating,
   onToggleAnimation,
+  isAudioEnabled,
+  audioVolume,
+  audioSummary,
+  audioError,
+  onToggleAudio,
+  onAudioVolumeChange,
   isMobile = false,
   hudHidden
 }) => {
@@ -77,6 +89,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
     const value = Number(event.target.value);
     if (!Number.isNaN(value)) {
       onComplexityChange(value);
+    }
+  };
+
+  const handleAudioVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(event.target.value);
+    if (!Number.isNaN(value)) {
+      onAudioVolumeChange(value / 100);
     }
   };
 
@@ -232,6 +251,43 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   <span>Animate Complexity</span>
                 </label>
               </div>
+            </div>
+          </div>
+
+          <div className="control-section">
+            <div className="control-row">
+              <span className="control-label">Sound</span>
+              <div className="control-value control-seed-row">
+                <button
+                  type="button"
+                  className="control-button"
+                  aria-pressed={isAudioEnabled}
+                  onClick={() => {
+                    void onToggleAudio();
+                  }}
+                >
+                  {isAudioEnabled ? "Stop sound" : "Start sound"}
+                </button>
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="control-range"
+                  value={Math.round(audioVolume * 100)}
+                  onChange={handleAudioVolumeChange}
+                  aria-label="Sound volume"
+                />
+                <span className="control-range-value">
+                  {Math.round(audioVolume * 100)}
+                </span>
+              </div>
+              <div className="control-hint">{audioSummary}</div>
+              {audioError && (
+                <div className="control-hint control-hint--error">
+                  {audioError}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -391,6 +447,43 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       <span>Animate complexity</span>
                     </label>
                   </div>
+                </div>
+              </div>
+
+              <div className="control-section">
+                <div className="control-row">
+                  <span className="control-label">Sound</span>
+                  <div className="control-value control-seed-row">
+                    <button
+                      type="button"
+                      className="control-button"
+                      aria-pressed={isAudioEnabled}
+                      onClick={() => {
+                        void onToggleAudio();
+                      }}
+                    >
+                      {isAudioEnabled ? "Stop sound" : "Start sound"}
+                    </button>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="control-range"
+                      value={Math.round(audioVolume * 100)}
+                      onChange={handleAudioVolumeChange}
+                      aria-label="Sound volume"
+                    />
+                    <span className="control-range-value">
+                      {Math.round(audioVolume * 100)}
+                    </span>
+                  </div>
+                  <div className="control-hint">{audioSummary}</div>
+                  {audioError && (
+                    <div className="control-hint control-hint--error">
+                      {audioError}
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -74,6 +74,8 @@ Implemented notes:
 
 ## Phase 3: Add Audio Sonification
 
+Status: initial implementation on `feat/sonification`
+
 Priority: high
 
 Recommended architecture:
@@ -113,6 +115,13 @@ Suggested acceptance checks:
 - Audio does not clip or become painfully loud.
 - Visual animation can be off while audio remains meaningful.
 
+Implemented notes:
+
+- `buildAudioState()` maps `GenerationState` to deterministic tempo, notes, waveform, filter brightness, gain, and stereo pan.
+- `useSonification()` owns the Web Audio engine and starts only from user interaction.
+- MiniHud exposes a visible Sound button; ControlPanel exposes start/stop, volume, current audio summary, and errors.
+- Unit tests cover deterministic mapping, complexity-to-density behavior, and conservative audio parameter ranges.
+
 ## Phase 4: Accessibility And Presentation Polish
 
 Priority: medium
@@ -149,7 +158,7 @@ Ideas:
 
 ## Suggested Next Steps
 
-1. Manually sample the new automatic style selection across a few devices/browsers.
-2. Open a Phase 2 PR after `npm run ci` passes.
-3. Start Phase 3 audio with a small Web Audio API implementation: start/stop, volume, and deterministic sound mapping from `GenerationState`.
+1. Manually test sound start/stop and volume in Chrome, Safari, Firefox, and at least one mobile browser.
+2. Tune each style's sound personality for the demo: orbits, strata, constellation, bubbles, waves, tree, aurora, nebula, and flowfield should be clearly distinguishable.
+3. Add a concise screen-reader summary that includes both visual style and sound state.
 4. Do a timed rehearsal on the actual demo machine or a similar laptop, with browser devtools memory/performance open.
