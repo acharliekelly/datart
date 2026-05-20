@@ -64,7 +64,7 @@ const MiniHud: React.FC<MiniHudProps> = ({
       <button 
         type="button"
         className="mini-hud__button mini-hud__button--arrow"
-        aria-label="Previous style"
+        aria-label={`Previous style. Current style is ${labelText}`}
         onClick={() => handleStep(-1)}
       >
         &lt;
@@ -74,6 +74,12 @@ const MiniHud: React.FC<MiniHudProps> = ({
       <button 
         type="button"
         className="mini-hud__label"
+        aria-pressed={isAnimating}
+        aria-label={
+          isAnimating
+            ? `Stop complexity animation for ${labelText}`
+            : `Start complexity animation for ${labelText}`
+        }
         onClick={onToggleAnimation}
         title={
           isAnimating
@@ -89,7 +95,11 @@ const MiniHud: React.FC<MiniHudProps> = ({
         type="button"
         className="mini-hud__button mini-hud__button--sound"
         aria-pressed={isAudioEnabled}
-        aria-label={isAudioEnabled ? "Stop sound" : "Start sound"}
+        aria-label={
+          isAudioEnabled
+            ? `Stop sound for ${labelText}`
+            : `Start sound for ${labelText}`
+        }
         onClick={() => {
           void onToggleAudio();
         }}
@@ -102,7 +112,7 @@ const MiniHud: React.FC<MiniHudProps> = ({
       <button 
         type="button"
         className="mini-hud__button mini-hud__button--arrow"
-        aria-label="Next style"
+        aria-label={`Next style. Current style is ${labelText}`}
         onClick={() => handleStep(1)}
       >
         &gt;

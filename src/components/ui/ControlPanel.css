@@ -71,6 +71,7 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  min-height: 32px;
 }
 
 .control-input,
@@ -89,8 +90,9 @@
 }
 
 .control-button {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.6rem;
+  min-height: 36px;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
   border: 1px solid rgba(148, 163, 184, 0.7);
   background: rgba(30, 64, 175, 0.9);
@@ -117,6 +119,7 @@
 
 .control-range {
   flex: 1;
+  min-height: 32px;
 }
 
 .control-range-value {
