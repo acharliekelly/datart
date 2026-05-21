@@ -96,6 +96,7 @@ interface StyleAudioProfile {
   octaveChance: number;
   rhythm: number[];
   chord: number[];
+  atmosphereKind: AtmosphereKind;
   atmosphereGain: number;
   atmosphereNoise: number;
   glideChance: number;
@@ -130,6 +131,7 @@ const DEFAULT_PROFILE: StyleAudioProfile = {
   octaveChance: 0.22,
   rhythm: [1, 1, 1.5, 0.5],
   chord: [0, 7, 12],
+  atmosphereKind: "orbital",
   atmosphereGain: 0.22,
   atmosphereNoise: 0.03,
   glideChance: 0.08,
@@ -139,7 +141,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   orbits: {
     ...DEFAULT_PROFILE,
     mode: "pulse",
-    atmosphereKind: "orbital",
+    scaleName: "Major pentatonic",
     waveform: "sine",
     scale: MAJOR_PENTATONIC,
     tempoBase: 48,
@@ -152,6 +154,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.42,
     rhythm: [1.5, 1, 1.5, 2],
     chord: [0, 7, 12],
+    atmosphereKind: "orbital",
     atmosphereGain: 0.3,
   },
   strata: {
@@ -175,6 +178,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -7,
     rhythm: [2, 3, 1.5],
     chord: [0, 3, 10],
+    atmosphereKind: "sediment",
     atmosphereGain: 0.42,
     atmosphereNoise: 0.08,
   },
@@ -201,6 +205,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.48,
     rhythm: [0.5, 0.5, 1, 0.25, 0.75],
     chord: [0, 4, 11],
+    atmosphereKind: "starfield",
     atmosphereGain: 0.18,
     atmosphereNoise: 0.05,
     glideChance: 0.35,
@@ -208,7 +213,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   bubbles: {
     ...DEFAULT_PROFILE,
     mode: "pluck",
-    atmosphereKind: "buoyant",
+    scaleName: "Major pentatonic",
     waveform: "sine",
     scale: MAJOR_PENTATONIC,
     tempoBase: 68,
@@ -225,6 +230,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.36,
     rhythm: [0.75, 0.5, 1.25, 0.5],
     chord: [0, 7, 14],
+    atmosphereKind: "buoyant",
     atmosphereGain: 0.18,
     glideChance: 0.18,
   },
@@ -246,6 +252,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.5,
     rhythm: [1, 2, 0.75, 1.25],
     chord: [0, 5, 12],
+    atmosphereKind: "tide",
     atmosphereGain: 0.36,
     atmosphereNoise: 0.12,
     glideChance: 0.28,
@@ -262,6 +269,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 7,
     rhythm: [1, 0.5, 0.5, 1.5],
     chord: [0, 4, 8],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.28,
   },
   isogrid: {
@@ -283,6 +291,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.16,
     rhythm: [0.5, 0.5, 0.5, 1],
     chord: [0, 6, 9],
+    atmosphereKind: "geometric",
     atmosphereGain: 0.12,
   },
   crystal: {
@@ -306,6 +315,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.5,
     rhythm: [0.5, 1, 0.5, 0.25, 0.75],
     chord: [0, 6, 12],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.2,
   },
   lattice: {
@@ -319,6 +329,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     filterQ: 1.5,
     rhythm: [0.75, 0.75, 1, 0.5],
     chord: [0, 3, 9],
+    atmosphereKind: "geometric",
     atmosphereGain: 0.16,
   },
   nebula: {
@@ -340,6 +351,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -12,
     rhythm: [3, 2, 4],
     chord: [0, 7, 11],
+    atmosphereKind: "mist",
     atmosphereGain: 0.46,
     atmosphereNoise: 0.16,
   },
@@ -362,6 +374,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 3,
     rhythm: [1.5, 0.75, 1.25, 2],
     chord: [0, 6, 11],
+    atmosphereKind: "curtain",
     atmosphereGain: 0.42,
     atmosphereNoise: 0.1,
     glideChance: 0.42,
@@ -382,6 +395,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoMix: 0.34,
     rhythm: [1, 0.5, 1.5, 0.5],
     chord: [0, 4, 8],
+    atmosphereKind: "mist",
     atmosphereGain: 0.28,
     atmosphereNoise: 0.1,
   },
@@ -402,6 +416,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -5,
     rhythm: [0.75, 0.75, 0.5, 1.25],
     chord: [0, 7, 15],
+    atmosphereKind: "branching",
     atmosphereGain: 0.2,
   },
   koch: {
@@ -416,6 +431,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 8,
     rhythm: [1, 0.5, 0.5, 0.5],
     chord: [0, 6, 12],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.22,
   },
   tree: {
@@ -433,6 +449,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -10,
     rhythm: [1, 0.5, 0.75, 1.5],
     chord: [0, 7, 12],
+    atmosphereKind: "branching",
     atmosphereGain: 0.28,
   },
   flowfield: {
@@ -453,6 +470,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.4,
     rhythm: [0.75, 1.25, 0.75, 1.75],
     chord: [0, 6, 9],
+    atmosphereKind: "current",
     atmosphereGain: 0.34,
     atmosphereNoise: 0.12,
     glideChance: 0.38,
