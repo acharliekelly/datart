@@ -25,7 +25,7 @@ import { useIsMobile } from "./hooks/useIsMobile";
 import { useSonification } from "./hooks/useSonification";
 import "./App.css";
 
-const STARTING_ANIMATION_STATE = true;
+const STARTING_ANIMATION_STATE = false;
 const NORMAL_ANIMATION_FPS = 12;
 const REDUCED_MOTION_ANIMATION_FPS = 4;
 const NORMAL_COMPLEXITY_SPEED = 24;
