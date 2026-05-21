@@ -74,7 +74,7 @@ Implemented notes:
 
 ## Phase 3: Add Audio Sonification
 
-Status: Phase 3B sound-spruce pass implemented on `feat/sonification`
+Status: Phase 3C parallel-audio artwork pass implemented
 
 Priority: high
 
@@ -128,6 +128,13 @@ Phase 3B notes:
 - Added profile-driven scales, waveforms, rhythms, envelopes, echo settings, filter resonance, root offsets, and chord/drone accents.
 - The Web Audio engine now supports rhythmic spacing, echo feedback, accent notes, branch/sparkle follow-up notes, and occasional chord/drone layers.
 - Unit tests now verify that representative visual styles produce distinct audio modes, waveforms, and summaries.
+
+Phase 3C notes:
+
+- Audio now has a continuous atmosphere layer as well as event notes, so sound is a parallel artwork rather than a sparse decoration.
+- Style profiles include atmosphere kinds such as orbital, sediment, starfield, buoyant, tide, geometric, shimmer, mist, curtain, branching, and current.
+- The engine renders sustained detuned tones, filtered noise texture, slow gain/filter modulation, gliding notes, echo, chords, and a master compressor/limiter.
+- Unit tests cover atmosphere presence and style-to-atmosphere variation.
 
 ## Phase 4: Accessibility And Presentation Polish
 
