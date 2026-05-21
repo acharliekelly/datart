@@ -57,6 +57,10 @@ describe("buildAudioState", () => {
     expect(audio.notes.length).toBeLessThanOrEqual(14);
     expect(audio.rhythm.length).toBeGreaterThan(0);
     expect(audio.chordFrequencies.length).toBeGreaterThan(0);
+    expect(audio.atmosphere.frequencies.length).toBeGreaterThan(0);
+    expect(audio.atmosphere.gain).toBeGreaterThan(0);
+    expect(audio.atmosphere.filterFrequency).toBeGreaterThan(100);
+    expect(audio.atmosphere.modulationRate).toBeGreaterThan(0);
     for (const note of audio.notes) {
       expect(note.frequency).toBeGreaterThan(50);
       expect(note.frequency).toBeLessThan(2000);
@@ -87,10 +91,12 @@ describe("buildAudioState", () => {
     );
 
     const modes = new Set(states.map((state) => state.mode));
+    const atmospheres = new Set(states.map((state) => state.atmosphere.kind));
     const waveforms = new Set(states.map((state) => state.waveform));
     const summaries = new Set(states.map((state) => state.summary));
 
     expect(modes.size).toBeGreaterThanOrEqual(6);
+    expect(atmospheres.size).toBeGreaterThanOrEqual(6);
     expect(waveforms.size).toBeGreaterThanOrEqual(3);
     expect(summaries.size).toBe(styleIds.length);
   });
