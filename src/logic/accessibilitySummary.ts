@@ -1,5 +1,6 @@
 import { STYLES } from "../components/art/styleRegistry";
 import type { AudioState } from "./audioMapping";
+import { getAudioModeExperienceDescription } from "./experienceDescriptions";
 import type { GenerationState } from "./types";
 
 interface AccessibilitySummaryOptions {
@@ -29,7 +30,12 @@ export function buildAccessibilitySummary({
   prefersReducedMotion,
 }: AccessibilitySummaryOptions): string {
   const styleLabel = getStyleLabel(generationState.styleId);
-  const animationState = isAnimating ? "animation on" : "animation off";
+  const animationState = isAnimating
+    ? "automatic complexity on; visual motion and audio variation are changing together"
+    : "automatic complexity off; visual complexity and audio variation are static";
+  const complexityState = isAnimating
+    ? "Complexity is sliding automatically."
+    : `Complexity ${Math.round(generationState.complexity)}.`;
   const motionPreference = prefersReducedMotion
     ? "reduced motion requested"
     : "standard motion";
@@ -40,10 +46,10 @@ export function buildAccessibilitySummary({
   return [
     `DatArt generated ${styleLabel}.`,
     `Mode ${generationState.seedSource === "manualDial" ? "manual seed" : "automatic"}.`,
-    `Complexity ${Math.round(generationState.complexity)}.`,
+    complexityState,
     `${animationState}; ${motionPreference}.`,
     `${soundState}.`,
-    `Audio profile: ${audioState.summary}.`,
+    `Audio profile: ${getAudioModeExperienceDescription(audioState, isAnimating)}.`,
     `Palette has ${getPaletteSummary(generationState.palette)}.`,
   ].join(" ");
 }

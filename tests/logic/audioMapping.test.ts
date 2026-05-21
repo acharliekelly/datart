@@ -57,10 +57,8 @@ describe("buildAudioState", () => {
     expect(audio.notes.length).toBeLessThanOrEqual(14);
     expect(audio.rhythm.length).toBeGreaterThan(0);
     expect(audio.chordFrequencies.length).toBeGreaterThan(0);
-    expect(audio.atmosphere.frequencies.length).toBeGreaterThan(0);
-    expect(audio.atmosphere.gain).toBeGreaterThan(0);
-    expect(audio.atmosphere.filterFrequency).toBeGreaterThan(100);
-    expect(audio.atmosphere.modulationRate).toBeGreaterThan(0);
+    expect(audio.modeLabel.length).toBeGreaterThan(0);
+    expect(audio.scaleName.length).toBeGreaterThan(0);
     for (const note of audio.notes) {
       expect(note.frequency).toBeGreaterThan(50);
       expect(note.frequency).toBeLessThan(2000);

@@ -50,6 +50,8 @@ export interface AudioAtmosphere {
 export interface AudioState {
   styleId: StyleId;
   mode: AudioMode;
+  modeLabel: string;
+  scaleName: string;
   tempo: number;
   masterGain: number;
   filterFrequency: number;
@@ -74,7 +76,7 @@ interface HslColor {
 
 interface StyleAudioProfile {
   mode: AudioMode;
-  atmosphereKind: AtmosphereKind;
+  scaleName: string;
   waveform: OscillatorVoice;
   scale: number[];
   tempoBase: number;
@@ -108,7 +110,7 @@ const OCTATONIC = [0, 2, 3, 5, 6, 8, 9, 11, 12];
 
 const DEFAULT_PROFILE: StyleAudioProfile = {
   mode: "pulse",
-  atmosphereKind: "orbital",
+  scaleName: "Major pentatonic",
   waveform: "sine",
   scale: MAJOR_PENTATONIC,
   tempoBase: 64,
@@ -155,7 +157,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   strata: {
     ...DEFAULT_PROFILE,
     mode: "drone",
-    atmosphereKind: "sediment",
+    scaleName: "Harmonic minor",
     waveform: "triangle",
     scale: HARMONIC_MINOR,
     tempoBase: 36,
@@ -179,7 +181,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   constellation: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "starfield",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 78,
@@ -229,7 +231,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   waves: {
     ...DEFAULT_PROFILE,
     mode: "wave",
-    atmosphereKind: "tide",
+    scaleName: "Minor pentatonic",
     waveform: "triangle",
     scale: MINOR_PENTATONIC,
     tempoBase: 52,
@@ -251,7 +253,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   supershape: {
     ...DEFAULT_PROFILE,
     mode: "bloom",
-    atmosphereKind: "shimmer",
+    scaleName: "Whole tone",
     waveform: "sawtooth",
     scale: WHOLE_TONE,
     tempoBase: 70,
@@ -265,7 +267,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   isogrid: {
     ...DEFAULT_PROFILE,
     mode: "grid",
-    atmosphereKind: "geometric",
+    scaleName: "Octatonic",
     waveform: "square",
     scale: OCTATONIC,
     tempoBase: 88,
@@ -286,7 +288,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   crystal: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "shimmer",
+    scaleName: "Lydian",
     waveform: "triangle",
     scale: LYDIAN,
     tempoBase: 72,
@@ -309,7 +311,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   lattice: {
     ...DEFAULT_PROFILE,
     mode: "grid",
-    atmosphereKind: "geometric",
+    scaleName: "Octatonic",
     waveform: "square",
     scale: OCTATONIC,
     tempoBase: 76,
@@ -322,7 +324,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   nebula: {
     ...DEFAULT_PROFILE,
     mode: "drone",
-    atmosphereKind: "mist",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 34,
@@ -344,7 +346,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   aurora: {
     ...DEFAULT_PROFILE,
     mode: "flow",
-    atmosphereKind: "curtain",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 46,
@@ -367,7 +369,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   voronoi: {
     ...DEFAULT_PROFILE,
     mode: "bloom",
-    atmosphereKind: "mist",
+    scaleName: "Whole tone",
     waveform: "sawtooth",
     scale: WHOLE_TONE,
     tempoBase: 58,
@@ -386,7 +388,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   fern: {
     ...DEFAULT_PROFILE,
     mode: "branch",
-    atmosphereKind: "branching",
+    scaleName: "Minor pentatonic",
     waveform: "triangle",
     scale: MINOR_PENTATONIC,
     tempoBase: 60,
@@ -405,7 +407,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   koch: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "shimmer",
+    scaleName: "Octatonic",
     waveform: "triangle",
     scale: OCTATONIC,
     tempoBase: 66,
@@ -419,7 +421,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   tree: {
     ...DEFAULT_PROFILE,
     mode: "branch",
-    atmosphereKind: "branching",
+    scaleName: "Harmonic minor",
     waveform: "triangle",
     scale: HARMONIC_MINOR,
     tempoBase: 50,
@@ -436,7 +438,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   flowfield: {
     ...DEFAULT_PROFILE,
     mode: "flow",
-    atmosphereKind: "current",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 54,
@@ -501,6 +503,29 @@ function averagePalette(palette: string[]): HslColor {
 
 function frequencyFromSemitone(rootFrequency: number, semitone: number): number {
   return rootFrequency * Math.pow(2, semitone / 12);
+}
+
+function getAudioModeLabel(mode: AudioMode): string {
+  switch (mode) {
+    case "pulse":
+      return "Orbital Pulse";
+    case "drone":
+      return "Layered Drone";
+    case "sparkle":
+      return "Starlight Sparkle";
+    case "pluck":
+      return "Buoyant Plucks";
+    case "wave":
+      return "Wave Sweep";
+    case "grid":
+      return "Geometric Rhythm";
+    case "bloom":
+      return "Bloom Chords";
+    case "branch":
+      return "Branching Echo";
+    case "flow":
+      return "Flowing Atmosphere";
+  }
 }
 
 export function buildAudioState(state: GenerationState): AudioState {
@@ -574,6 +599,8 @@ export function buildAudioState(state: GenerationState): AudioState {
   return {
     styleId: state.styleId,
     mode: profile.mode,
+    modeLabel: getAudioModeLabel(profile.mode),
+    scaleName: profile.scaleName,
     tempo,
     masterGain,
     filterFrequency,
@@ -588,7 +615,7 @@ export function buildAudioState(state: GenerationState): AudioState {
     atmosphere,
     notes,
     summary:
-      `${state.styleId} ${profile.mode}/${profile.atmosphereKind}: ${tempo} BPM, ${notes.length} notes, ` +
+      `${state.styleId} ${getAudioModeLabel(profile.mode)} using ${profile.scaleName}: ${tempo} BPM, ${notes.length} notes, ` +
       `${Math.round(filterFrequency)} Hz brightness`,
   };
 }

@@ -9,6 +9,7 @@ interface MiniHudProps {
   effectiveStyle: StyleId;
   isAnimating: boolean;
   isAudioEnabled: boolean;
+  audioModeLabel: string;
   onModeChange: (mode: Mode) => void;
   onStyleChange: (style: StyleId | null) => void;
   onToggleAnimation: () => void;
@@ -30,6 +31,7 @@ const MiniHud: React.FC<MiniHudProps> = ({
   effectiveStyle,
   isAnimating,
   isAudioEnabled,
+  audioModeLabel,
   onModeChange,
   onStyleChange,
   onToggleAnimation,
@@ -70,25 +72,30 @@ const MiniHud: React.FC<MiniHudProps> = ({
         &lt;
       </button>
 
-      {/* Label / animation toggle */}
-      <button 
-        type="button"
+      <div
         className="mini-hud__label"
+      >
+        <span className="mini-hud__text">{labelText}</span>
+      </div>
+
+      <button
+        type="button"
+        className="mini-hud__button mini-hud__button--motion"
         aria-pressed={isAnimating}
         aria-label={
           isAnimating
-            ? `Stop complexity animation for ${labelText}`
-            : `Start complexity animation for ${labelText}`
+            ? `Stop automatic complexity for ${labelText}. Visual motion and audio variation will become static.`
+            : `Start automatic complexity for ${labelText}. Visual motion and audio variation will change together.`
         }
         onClick={onToggleAnimation}
         title={
           isAnimating
-            ? "Click to stop animation"
-            : "Click to start animation"
+            ? "Stop automatic complexity"
+            : "Start automatic complexity"
         }
       >
-        <span className="mini-hud__dot" />
-        <span className="mini-hud__text">{labelText}</span>
+        <span className="mini-hud__motion-dot" />
+        <span className="mini-hud__text">Motion</span>
       </button>
 
       <button
@@ -97,15 +104,16 @@ const MiniHud: React.FC<MiniHudProps> = ({
         aria-pressed={isAudioEnabled}
         aria-label={
           isAudioEnabled
-            ? `Stop sound for ${labelText}`
-            : `Start sound for ${labelText}`
+            ? `Stop ${audioModeLabel} sound for ${labelText}`
+            : `Start ${audioModeLabel} sound for ${labelText}`
         }
         onClick={() => {
           void onToggleAudio();
         }}
         title={isAudioEnabled ? "Stop sound" : "Start sound"}
       >
-        Sound
+        <span className="mini-hud__sound-dot" />
+        <span className="mini-hud__text">{audioModeLabel}</span>
       </button>
 
       {/* Next button */}

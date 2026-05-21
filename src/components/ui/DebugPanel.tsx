@@ -1,4 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
+import type { AudioState } from "../../logic/audioMapping";
+import {
+  getAudioModeExperienceDescription,
+  getVisualStyleDescription,
+} from "../../logic/experienceDescriptions";
 import type { GenerationState, Mode } from "../../logic/types";
 import { useIsDev } from "../../hooks/useIsDev";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -12,6 +17,8 @@ import './DebugPanel.css';
 
 interface DebugPanelProps {
   state: GenerationState;
+  audioState: AudioState;
+  isAnimating: boolean;
   ipLoaded: boolean;
   mode: Mode;
   ipError?: string | null;
@@ -21,6 +28,8 @@ interface DebugPanelProps {
 
 const DebugPanel: React.FC<DebugPanelProps> = ({
   state,
+  audioState,
+  isAnimating,
   ipLoaded,
   mode,
   ipError,
@@ -38,6 +47,14 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
   const short = (value: string, max = 80): string =>
     value.length > max ? value.slice(0, max) + "…" : value;
   const browserName = getBrowserName(state.traits.userAgent);
+  const visualDescription = getVisualStyleDescription(state.styleId);
+  const audioDescription = getAudioModeExperienceDescription(
+    audioState,
+    isAnimating
+  );
+  const complexityDescription = isAnimating
+    ? "Complexity is sliding automatically, so the visual density and audio activity are moving together."
+    : `Complexity is static at ${Math.round(state.complexity)}.`;
 
   const toggleLabel = open ? "Hide explanation" : "Show explanation";
   const toggleClasses =
@@ -99,8 +116,14 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
               style, palette, complexity, and sound profile.
             </p>
             <p>
-              This version selected <strong>{state.styleId}</strong> at
-              complexity <strong>{Math.round(state.complexity)}</strong>.
+              <strong>Visual Style:</strong> {visualDescription}.
+            </p>
+            <p>
+              <strong>Audio Mode:</strong> {audioDescription}.
+            </p>
+            <p>
+              This version selected <strong>{state.styleId}</strong>.{" "}
+              {complexityDescription}
               {state.styleReason ? ` ${state.styleReason}` : ""}
             </p>
           </div>
