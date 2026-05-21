@@ -14,9 +14,13 @@ interface UseSonificationResult {
 class SonificationEngine {
   private context: AudioContext;
   private masterGain: GainNode;
+  private compressor: DynamicsCompressorNode;
   private echoGain: GainNode;
   private echoDelay: DelayNode;
   private echoFeedback: GainNode;
+  private atmosphereGain: GainNode;
+  private atmosphereFilter: BiquadFilterNode;
+  private atmosphereNodes: AudioNode[] = [];
   private timerId: number | null = null;
   private pendingTimerIds: number[] = [];
   private audioState: AudioState;
@@ -27,26 +31,42 @@ class SonificationEngine {
   constructor(audioState: AudioState, volume: number) {
     this.context = new AudioContext();
     this.masterGain = this.context.createGain();
+    this.compressor = this.context.createDynamicsCompressor();
     this.echoGain = this.context.createGain();
     this.echoDelay = this.context.createDelay(1.5);
     this.echoFeedback = this.context.createGain();
+    this.atmosphereGain = this.context.createGain();
+    this.atmosphereFilter = this.context.createBiquadFilter();
 
     this.masterGain.gain.value = audioState.masterGain * volume;
+    this.compressor.threshold.value = -18;
+    this.compressor.knee.value = 18;
+    this.compressor.ratio.value = 5;
+    this.compressor.attack.value = 0.008;
+    this.compressor.release.value = 0.18;
     this.echoGain.gain.value = audioState.echoMix;
     this.echoDelay.delayTime.value = audioState.echoTime;
     this.echoFeedback.gain.value = 0.24;
+    this.atmosphereGain.gain.value = audioState.atmosphere.gain;
+    this.atmosphereFilter.type = "lowpass";
+    this.atmosphereFilter.frequency.value = audioState.atmosphere.filterFrequency;
+    this.atmosphereFilter.Q.value = audioState.atmosphere.filterQ;
 
     this.echoDelay.connect(this.echoFeedback);
     this.echoFeedback.connect(this.echoDelay);
     this.echoDelay.connect(this.echoGain);
     this.echoGain.connect(this.masterGain);
-    this.masterGain.connect(this.context.destination);
+    this.atmosphereFilter.connect(this.atmosphereGain);
+    this.atmosphereGain.connect(this.masterGain);
+    this.masterGain.connect(this.compressor);
+    this.compressor.connect(this.context.destination);
     this.audioState = audioState;
     this.volume = volume;
   }
 
   async start() {
     await this.context.resume();
+    this.startAtmosphere();
     this.scheduleNext();
   }
 
@@ -59,6 +79,7 @@ class SonificationEngine {
       window.clearTimeout(pendingTimerId);
     }
     this.pendingTimerIds = [];
+    this.stopAtmosphere();
     this.masterGain.gain.setTargetAtTime(0, this.context.currentTime, 0.04);
   }
 
@@ -68,6 +89,7 @@ class SonificationEngine {
   }
 
   updateAudioState(audioState: AudioState) {
+    const previousAtmosphereSignature = this.getAtmosphereSignature();
     this.audioState = audioState;
     this.noteIndex = this.noteIndex % Math.max(1, audioState.notes.length);
     this.rhythmIndex = this.rhythmIndex % Math.max(1, audioState.rhythm.length);
@@ -86,6 +108,20 @@ class SonificationEngine {
       this.context.currentTime,
       0.08
     );
+    this.atmosphereGain.gain.setTargetAtTime(
+      audioState.atmosphere.gain,
+      this.context.currentTime,
+      0.18
+    );
+    this.atmosphereFilter.frequency.setTargetAtTime(
+      audioState.atmosphere.filterFrequency,
+      this.context.currentTime,
+      0.35
+    );
+    this.atmosphereFilter.Q.value = audioState.atmosphere.filterQ;
+    if (previousAtmosphereSignature !== this.getAtmosphereSignature()) {
+      this.startAtmosphere();
+    }
   }
 
   setVolume(volume: number) {
@@ -122,6 +158,102 @@ class SonificationEngine {
     return false;
   }
 
+  private startAtmosphere() {
+    this.stopAtmosphere();
+    const now = this.context.currentTime;
+
+    for (const [index, frequency] of this.audioState.atmosphere.frequencies.entries()) {
+      const oscillator = this.context.createOscillator();
+      const detune = index % 2 === 0
+        ? this.audioState.atmosphere.detuneCents
+        : -this.audioState.atmosphere.detuneCents;
+
+      oscillator.type = this.audioState.atmosphere.waveform;
+      oscillator.frequency.value = frequency;
+      oscillator.detune.value = detune;
+      oscillator.connect(this.atmosphereFilter);
+      oscillator.start(now);
+      this.atmosphereNodes.push(oscillator);
+    }
+
+    if (this.audioState.atmosphere.noiseMix > 0) {
+      const noise = this.createNoiseSource();
+      const noiseGain = this.context.createGain();
+      noiseGain.gain.value = this.audioState.atmosphere.noiseMix;
+      noise.connect(noiseGain);
+      noiseGain.connect(this.atmosphereFilter);
+      noise.start(now);
+      this.atmosphereNodes.push(noise, noiseGain);
+    }
+
+    this.animateAtmosphere();
+  }
+
+  private stopAtmosphere() {
+    for (const node of this.atmosphereNodes) {
+      if ("stop" in node && typeof node.stop === "function") {
+        try {
+          node.stop();
+        } catch {
+          // already stopped
+        }
+      }
+      node.disconnect();
+    }
+    this.atmosphereNodes = [];
+  }
+
+  private getAtmosphereSignature(): string {
+    return [
+      this.audioState.atmosphere.kind,
+      this.audioState.atmosphere.waveform,
+      this.audioState.atmosphere.frequencies
+        .map((value) => value.toFixed(2))
+        .join(","),
+      this.audioState.atmosphere.noiseMix.toFixed(3),
+    ].join("|");
+  }
+
+  private animateAtmosphere() {
+    const now = this.context.currentTime;
+    const depth = this.audioState.atmosphere.modulationDepth;
+    const rate = this.audioState.atmosphere.modulationRate;
+    const baseGain = this.audioState.atmosphere.gain;
+    const baseFilter = this.audioState.atmosphere.filterFrequency;
+
+    this.atmosphereGain.gain.cancelScheduledValues(now);
+    this.atmosphereGain.gain.setValueAtTime(baseGain, now);
+    for (let i = 1; i <= 8; i++) {
+      const t = now + i / Math.max(0.01, rate);
+      const gain = baseGain * (1 + (i % 2 === 0 ? depth : -depth) * 0.35);
+      this.atmosphereGain.gain.linearRampToValueAtTime(gain, t);
+    }
+
+    this.atmosphereFilter.frequency.cancelScheduledValues(now);
+    this.atmosphereFilter.frequency.setValueAtTime(baseFilter, now);
+    for (let i = 1; i <= 8; i++) {
+      const t = now + i / Math.max(0.01, rate * 0.7);
+      const filter = baseFilter * (1 + (i % 2 === 0 ? depth : -depth));
+      this.atmosphereFilter.frequency.linearRampToValueAtTime(filter, t);
+    }
+  }
+
+  private createNoiseSource(): AudioBufferSourceNode {
+    const duration = 2;
+    const sampleRate = this.context.sampleRate;
+    const buffer = this.context.createBuffer(1, sampleRate * duration, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < data.length; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const source = this.context.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    return source;
+  }
+
   private playPatternNote(note: AudioState["notes"][number]) {
     const accentBoost = note.accent ? 1.22 : 1;
     this.playNote(
@@ -130,7 +262,8 @@ class SonificationEngine {
       note.velocity * accentBoost,
       note.pan,
       this.audioState.waveform,
-      note.accent
+      note.accent,
+      note.glideToFrequency
     );
 
     if (this.audioState.mode === "branch" && note.accent) {
@@ -141,7 +274,8 @@ class SonificationEngine {
           note.velocity * 0.58,
           -note.pan,
           "triangle",
-          false
+          false,
+          null
         );
       }, 90);
     }
@@ -154,7 +288,8 @@ class SonificationEngine {
           note.velocity * 0.45,
           -note.pan,
           "sine",
-          false
+          false,
+          null
         );
       }, 55);
     }
@@ -179,7 +314,8 @@ class SonificationEngine {
         this.audioState.mode === "drone" ? 0.26 : 0.18,
         (index - 1) * 0.35,
         this.audioState.waveform,
-        false
+        false,
+        null
       );
     });
   }
@@ -190,7 +326,8 @@ class SonificationEngine {
     velocity: number,
     pan: number,
     waveform: OscillatorType,
-    accent: boolean
+    accent: boolean,
+    glideToFrequency: number | null
   ) {
     const now = this.context.currentTime;
     const oscillator = this.context.createOscillator();
@@ -200,6 +337,12 @@ class SonificationEngine {
 
     oscillator.type = waveform;
     oscillator.frequency.setValueAtTime(frequency, now);
+    if (glideToFrequency) {
+      oscillator.frequency.exponentialRampToValueAtTime(
+        glideToFrequency,
+        now + Math.max(0.08, duration * 0.8)
+      );
+    }
 
     filter.type = "lowpass";
     filter.frequency.setTargetAtTime(

@@ -8,6 +8,8 @@ body:
       label: Category
       options:
         - 🎨 Styles / Visual Design
+        -    Modes / Audio Design
+        -    Accessibility
         - 🧪 Debug / Explainer UI
         - 🧱 Code / Architecture / CSS
         - 🎛️ Controls & HUD
