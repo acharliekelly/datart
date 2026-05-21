@@ -15,6 +15,7 @@ import type {
 
 import { buildGenerationState, } from './logic/generation';
 import { buildAccessibilitySummary } from "./logic/accessibilitySummary";
+import { getAudioModeExperienceDescription } from "./logic/experienceDescriptions";
 import { getBaseTraits, applyIpInfo } from "./logic/fingerprint";
 import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
@@ -86,6 +87,10 @@ const App: React.FC = () => {
       isAudioEnabled,
       prefersReducedMotion,
     ]
+  );
+  const audioExperienceSummary = useMemo(
+    () => getAudioModeExperienceDescription(audioState, isAnimating),
+    [audioState, isAnimating]
   );
 
   useEffect(() => {
@@ -223,7 +228,7 @@ const App: React.FC = () => {
         onToggleAnimation={handleToggleAnimation}
         isAudioEnabled={isAudioEnabled}
         audioVolume={audioVolume}
-        audioSummary={audioState.summary}
+        audioSummary={audioExperienceSummary}
         audioError={audioError}
         onToggleAudio={toggleAudio}
         onAudioVolumeChange={setAudioVolume}
@@ -236,6 +241,7 @@ const App: React.FC = () => {
         effectiveStyle={generationState.styleId}
         isAnimating={isAnimating}
         isAudioEnabled={isAudioEnabled}
+        audioModeLabel={audioState.modeLabel}
         onModeChange={handleModeChange}
         onStyleChange={handleStyleChange}
         onToggleAnimation={handleToggleAnimation}
@@ -243,6 +249,8 @@ const App: React.FC = () => {
       />
       <DebugPanel 
         state={generationState} 
+        audioState={audioState}
+        isAnimating={isAnimating}
         ipLoaded={ipLoaded}
         mode={options.mode} 
         ipError={ipError}

@@ -38,9 +38,29 @@ describe("buildAccessibilitySummary", () => {
 
     expect(summary).toContain("Recursive Tree");
     expect(summary).toContain("Complexity 64");
-    expect(summary).toContain("animation off");
+    expect(summary).toContain("automatic complexity off");
     expect(summary).toContain("reduced motion requested");
     expect(summary).toContain("sound on at 55 percent volume");
-    expect(summary).toContain(audioState.summary);
+    expect(summary).toContain(audioState.modeLabel);
+    expect(summary).toContain(`${audioState.tempo} BPM`);
+  });
+
+  it("uses stable wording while automatic complexity is moving", () => {
+    const generationState = buildGenerationState(traits, options);
+    const audioState = buildAudioState(generationState);
+
+    const summary = buildAccessibilitySummary({
+      generationState,
+      audioState,
+      isAnimating: true,
+      isAudioEnabled: true,
+      audioVolume: 0.55,
+      prefersReducedMotion: false,
+    });
+
+    expect(summary).toContain("Complexity is sliding automatically");
+    expect(summary).toContain("visual motion and audio variation are changing together");
+    expect(summary).toContain("tempo and event density changing");
+    expect(summary).not.toContain(`${audioState.tempo} BPM`);
   });
 });

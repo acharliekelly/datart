@@ -248,7 +248,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   step={1}
                     className="control-range"
                     value={complexity}
-                    disabled={mode !== "manual"}
+                    disabled={mode !== "manual" || isAnimating}
                     aria-label="Complexity"
                     aria-valuetext={`${Math.round(complexity)} percent complexity`}
                     onChange={(e) =>
@@ -261,7 +261,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               </div>
             </div>
             <div className="control-row" style={{ marginTop: "0.25rem" }}>
-              <span className="control-label">Animation</span>
+              <span className="control-label">Motion</span>
               <div className="control-value">
                 <label className="control-radio">
                   <input
@@ -269,8 +269,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                     checked={isAnimating}
                     onChange={onToggleAnimation}
                   />
-                  <span>Animate Complexity</span>
+                  <span>Automatic complexity</span>
                 </label>
+              </div>
+              <div className="control-hint">
+                Changes visual complexity and sound variation together.
               </div>
             </div>
           </div>
@@ -467,7 +470,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                 </div>
 
                 <div className="control-row" style={{ marginTop: "0.3rem" }}>
-                  <span className="control-label">Animation</span>
+                  <span className="control-label">Motion</span>
                   <div className="control-value">
                     <label className="control-radio">
                       <input
@@ -475,8 +478,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                         checked={isAnimating}
                         onChange={onToggleAnimation}
                       />
-                      <span>Animate complexity</span>
+                      <span>Automatic complexity</span>
                     </label>
+                  </div>
+                  <div className="control-hint">
+                    Changes visual complexity and sound variation together.
                   </div>
                 </div>
               </div>

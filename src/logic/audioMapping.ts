@@ -50,6 +50,8 @@ export interface AudioAtmosphere {
 export interface AudioState {
   styleId: StyleId;
   mode: AudioMode;
+  modeLabel: string;
+  scaleName: string;
   tempo: number;
   masterGain: number;
   filterFrequency: number;
@@ -74,7 +76,7 @@ interface HslColor {
 
 interface StyleAudioProfile {
   mode: AudioMode;
-  atmosphereKind: AtmosphereKind;
+  scaleName: string;
   waveform: OscillatorVoice;
   scale: number[];
   tempoBase: number;
@@ -94,6 +96,7 @@ interface StyleAudioProfile {
   octaveChance: number;
   rhythm: number[];
   chord: number[];
+  atmosphereKind: AtmosphereKind;
   atmosphereGain: number;
   atmosphereNoise: number;
   glideChance: number;
@@ -108,7 +111,7 @@ const OCTATONIC = [0, 2, 3, 5, 6, 8, 9, 11, 12];
 
 const DEFAULT_PROFILE: StyleAudioProfile = {
   mode: "pulse",
-  atmosphereKind: "orbital",
+  scaleName: "Major pentatonic",
   waveform: "sine",
   scale: MAJOR_PENTATONIC,
   tempoBase: 64,
@@ -128,6 +131,7 @@ const DEFAULT_PROFILE: StyleAudioProfile = {
   octaveChance: 0.22,
   rhythm: [1, 1, 1.5, 0.5],
   chord: [0, 7, 12],
+  atmosphereKind: "orbital",
   atmosphereGain: 0.22,
   atmosphereNoise: 0.03,
   glideChance: 0.08,
@@ -137,7 +141,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   orbits: {
     ...DEFAULT_PROFILE,
     mode: "pulse",
-    atmosphereKind: "orbital",
+    scaleName: "Major pentatonic",
     waveform: "sine",
     scale: MAJOR_PENTATONIC,
     tempoBase: 48,
@@ -150,12 +154,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.42,
     rhythm: [1.5, 1, 1.5, 2],
     chord: [0, 7, 12],
+    atmosphereKind: "orbital",
     atmosphereGain: 0.3,
   },
   strata: {
     ...DEFAULT_PROFILE,
     mode: "drone",
-    atmosphereKind: "sediment",
+    scaleName: "Harmonic minor",
     waveform: "triangle",
     scale: HARMONIC_MINOR,
     tempoBase: 36,
@@ -173,13 +178,14 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -7,
     rhythm: [2, 3, 1.5],
     chord: [0, 3, 10],
+    atmosphereKind: "sediment",
     atmosphereGain: 0.42,
     atmosphereNoise: 0.08,
   },
   constellation: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "starfield",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 78,
@@ -199,6 +205,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.48,
     rhythm: [0.5, 0.5, 1, 0.25, 0.75],
     chord: [0, 4, 11],
+    atmosphereKind: "starfield",
     atmosphereGain: 0.18,
     atmosphereNoise: 0.05,
     glideChance: 0.35,
@@ -206,7 +213,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   bubbles: {
     ...DEFAULT_PROFILE,
     mode: "pluck",
-    atmosphereKind: "buoyant",
+    scaleName: "Major pentatonic",
     waveform: "sine",
     scale: MAJOR_PENTATONIC,
     tempoBase: 68,
@@ -223,13 +230,14 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.36,
     rhythm: [0.75, 0.5, 1.25, 0.5],
     chord: [0, 7, 14],
+    atmosphereKind: "buoyant",
     atmosphereGain: 0.18,
     glideChance: 0.18,
   },
   waves: {
     ...DEFAULT_PROFILE,
     mode: "wave",
-    atmosphereKind: "tide",
+    scaleName: "Minor pentatonic",
     waveform: "triangle",
     scale: MINOR_PENTATONIC,
     tempoBase: 52,
@@ -244,6 +252,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.5,
     rhythm: [1, 2, 0.75, 1.25],
     chord: [0, 5, 12],
+    atmosphereKind: "tide",
     atmosphereGain: 0.36,
     atmosphereNoise: 0.12,
     glideChance: 0.28,
@@ -251,7 +260,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   supershape: {
     ...DEFAULT_PROFILE,
     mode: "bloom",
-    atmosphereKind: "shimmer",
+    scaleName: "Whole tone",
     waveform: "sawtooth",
     scale: WHOLE_TONE,
     tempoBase: 70,
@@ -260,12 +269,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 7,
     rhythm: [1, 0.5, 0.5, 1.5],
     chord: [0, 4, 8],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.28,
   },
   isogrid: {
     ...DEFAULT_PROFILE,
     mode: "grid",
-    atmosphereKind: "geometric",
+    scaleName: "Octatonic",
     waveform: "square",
     scale: OCTATONIC,
     tempoBase: 88,
@@ -281,12 +291,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.16,
     rhythm: [0.5, 0.5, 0.5, 1],
     chord: [0, 6, 9],
+    atmosphereKind: "geometric",
     atmosphereGain: 0.12,
   },
   crystal: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "shimmer",
+    scaleName: "Lydian",
     waveform: "triangle",
     scale: LYDIAN,
     tempoBase: 72,
@@ -304,12 +315,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     octaveChance: 0.5,
     rhythm: [0.5, 1, 0.5, 0.25, 0.75],
     chord: [0, 6, 12],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.2,
   },
   lattice: {
     ...DEFAULT_PROFILE,
     mode: "grid",
-    atmosphereKind: "geometric",
+    scaleName: "Octatonic",
     waveform: "square",
     scale: OCTATONIC,
     tempoBase: 76,
@@ -317,12 +329,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     filterQ: 1.5,
     rhythm: [0.75, 0.75, 1, 0.5],
     chord: [0, 3, 9],
+    atmosphereKind: "geometric",
     atmosphereGain: 0.16,
   },
   nebula: {
     ...DEFAULT_PROFILE,
     mode: "drone",
-    atmosphereKind: "mist",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 34,
@@ -338,13 +351,14 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -12,
     rhythm: [3, 2, 4],
     chord: [0, 7, 11],
+    atmosphereKind: "mist",
     atmosphereGain: 0.46,
     atmosphereNoise: 0.16,
   },
   aurora: {
     ...DEFAULT_PROFILE,
     mode: "flow",
-    atmosphereKind: "curtain",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 46,
@@ -360,6 +374,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 3,
     rhythm: [1.5, 0.75, 1.25, 2],
     chord: [0, 6, 11],
+    atmosphereKind: "curtain",
     atmosphereGain: 0.42,
     atmosphereNoise: 0.1,
     glideChance: 0.42,
@@ -367,7 +382,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
   voronoi: {
     ...DEFAULT_PROFILE,
     mode: "bloom",
-    atmosphereKind: "mist",
+    scaleName: "Whole tone",
     waveform: "sawtooth",
     scale: WHOLE_TONE,
     tempoBase: 58,
@@ -380,13 +395,14 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoMix: 0.34,
     rhythm: [1, 0.5, 1.5, 0.5],
     chord: [0, 4, 8],
+    atmosphereKind: "mist",
     atmosphereGain: 0.28,
     atmosphereNoise: 0.1,
   },
   fern: {
     ...DEFAULT_PROFILE,
     mode: "branch",
-    atmosphereKind: "branching",
+    scaleName: "Minor pentatonic",
     waveform: "triangle",
     scale: MINOR_PENTATONIC,
     tempoBase: 60,
@@ -400,12 +416,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -5,
     rhythm: [0.75, 0.75, 0.5, 1.25],
     chord: [0, 7, 15],
+    atmosphereKind: "branching",
     atmosphereGain: 0.2,
   },
   koch: {
     ...DEFAULT_PROFILE,
     mode: "sparkle",
-    atmosphereKind: "shimmer",
+    scaleName: "Octatonic",
     waveform: "triangle",
     scale: OCTATONIC,
     tempoBase: 66,
@@ -414,12 +431,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: 8,
     rhythm: [1, 0.5, 0.5, 0.5],
     chord: [0, 6, 12],
+    atmosphereKind: "shimmer",
     atmosphereGain: 0.22,
   },
   tree: {
     ...DEFAULT_PROFILE,
     mode: "branch",
-    atmosphereKind: "branching",
+    scaleName: "Harmonic minor",
     waveform: "triangle",
     scale: HARMONIC_MINOR,
     tempoBase: 50,
@@ -431,12 +449,13 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     rootOffset: -10,
     rhythm: [1, 0.5, 0.75, 1.5],
     chord: [0, 7, 12],
+    atmosphereKind: "branching",
     atmosphereGain: 0.28,
   },
   flowfield: {
     ...DEFAULT_PROFILE,
     mode: "flow",
-    atmosphereKind: "current",
+    scaleName: "Lydian",
     waveform: "sine",
     scale: LYDIAN,
     tempoBase: 54,
@@ -451,6 +470,7 @@ const STYLE_PROFILES: Partial<Record<StyleId, StyleAudioProfile>> = {
     echoTime: 0.4,
     rhythm: [0.75, 1.25, 0.75, 1.75],
     chord: [0, 6, 9],
+    atmosphereKind: "current",
     atmosphereGain: 0.34,
     atmosphereNoise: 0.12,
     glideChance: 0.38,
@@ -501,6 +521,29 @@ function averagePalette(palette: string[]): HslColor {
 
 function frequencyFromSemitone(rootFrequency: number, semitone: number): number {
   return rootFrequency * Math.pow(2, semitone / 12);
+}
+
+function getAudioModeLabel(mode: AudioMode): string {
+  switch (mode) {
+    case "pulse":
+      return "Orbital Pulse";
+    case "drone":
+      return "Layered Drone";
+    case "sparkle":
+      return "Starlight Sparkle";
+    case "pluck":
+      return "Buoyant Plucks";
+    case "wave":
+      return "Wave Sweep";
+    case "grid":
+      return "Geometric Rhythm";
+    case "bloom":
+      return "Bloom Chords";
+    case "branch":
+      return "Branching Echo";
+    case "flow":
+      return "Flowing Atmosphere";
+  }
 }
 
 export function buildAudioState(state: GenerationState): AudioState {
@@ -574,6 +617,8 @@ export function buildAudioState(state: GenerationState): AudioState {
   return {
     styleId: state.styleId,
     mode: profile.mode,
+    modeLabel: getAudioModeLabel(profile.mode),
+    scaleName: profile.scaleName,
     tempo,
     masterGain,
     filterFrequency,
@@ -588,7 +633,7 @@ export function buildAudioState(state: GenerationState): AudioState {
     atmosphere,
     notes,
     summary:
-      `${state.styleId} ${profile.mode}/${profile.atmosphereKind}: ${tempo} BPM, ${notes.length} notes, ` +
+      `${state.styleId} ${getAudioModeLabel(profile.mode)} using ${profile.scaleName}: ${tempo} BPM, ${notes.length} notes, ` +
       `${Math.round(filterFrequency)} Hz brightness`,
   };
 }
