@@ -16,6 +16,7 @@
   border: 1px solid rgba(148, 163, 184, 0.7);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(8px);
+  touch-action: pan-y;
 
   pointer-events: auto;
 }
@@ -124,21 +125,52 @@
 @media (max-width: 768px) {
   .mini-hud {
     top: 4rem;
+    width: calc(100vw - 1rem);
+    max-width: 36rem;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1.1fr) minmax(76px, 0.7fr) minmax(0, 1fr) 44px;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
     padding-inline: 0.3rem;
+  }
+
+  .mini-hud__button,
+  .mini-hud__label {
+    min-width: 0;
+  }
+
+  .mini-hud__button--arrow {
+    width: 44px;
+    padding-inline: 0;
   }
 
   .mini-hud__label {
     padding-inline: 0.45rem;
-    max-width: 42vw;
+    overflow: hidden;
   }
 
   .mini-hud__button--sound,
   .mini-hud__button--motion {
-    max-width: 42vw;
+    justify-content: center;
+    padding-inline: 0.45rem;
+    overflow: hidden;
   }
 
   .mini-hud__text {
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+}
+
+@media (max-width: 420px) {
+  .mini-hud {
+    grid-template-columns: 44px minmax(0, 1fr) minmax(54px, 0.55fr) minmax(54px, 0.7fr) 44px;
+  }
+
+  .mini-hud__button--motion,
+  .mini-hud__button--sound {
+    gap: 0.25rem;
+    padding-inline: 0.35rem;
   }
 }
