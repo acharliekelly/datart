@@ -47,7 +47,7 @@ export const STYLES: Record<
   },
   supershape: {
     id: "supershape",
-    label: "Supershape Stars",
+    label: "Supershape",
     component: SupershapeArt,
   },
   isogrid: {
@@ -87,12 +87,12 @@ export const STYLES: Record<
   },
   koch: {
     id: "koch",
-    label: "Koch Snowflake",
+    label: "Snowflake",
     component: KochSnowflakeArt,
   },
   tree: {
     id: "tree",
-    label: "Recursive Tree",
+    label: "Broccoli",
     component: RecursiveTreeArt,
   },
   flowfield: {
