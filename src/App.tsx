@@ -21,6 +21,7 @@ import DebugPanel from "./components/ui/DebugPanel";
 import ControlPanel from "./components/ui/ControlPanel";
 import ArtContainer from "./components/ui/ArtContainer";
 import MiniHud from "./components/ui/MiniHud";
+import { STYLES } from "./components/art/styleRegistry";
 import { useIpInfo } from "./hooks/useIpInfo";
 import { useIsMobile } from "./hooks/useIsMobile";
 import { useSonification } from "./hooks/useSonification";
@@ -31,6 +32,23 @@ const NORMAL_ANIMATION_FPS = 12;
 const REDUCED_MOTION_ANIMATION_FPS = 4;
 const NORMAL_COMPLEXITY_SPEED = 24;
 const REDUCED_MOTION_COMPLEXITY_SPEED = 8;
+const STYLE_IDS: StyleId[] = Object.values(STYLES).map((style) => style.id);
+
+function getNextStyleId(current: StyleId, direction: 1 | -1): StyleId {
+  const idx = STYLE_IDS.indexOf(current);
+  const safeIdx = idx === -1 ? 0 : idx;
+  const next = (safeIdx + direction + STYLE_IDS.length) % STYLE_IDS.length;
+  return STYLE_IDS[next];
+}
+
+function isSwipeIgnored(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      ".panel-toggle, .panel-body, input, select, textarea, [role='dialog']"
+    )
+  );
+}
 
 
 const App: React.FC = () => {
@@ -40,6 +58,8 @@ const App: React.FC = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const complexityDirectionRef = useRef<1 | -1>(1);
   const animationUserOverrideRef = useRef(false);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const lastSwipeTimeRef = useRef(0);
   
   const { ipInfo, loading: ipLoaded, error: ipError } = useIpInfo();
   const isMobile = useIsMobile();
@@ -204,9 +224,53 @@ const App: React.FC = () => {
     setIsAnimating((prev) => !prev);
   }
 
+  const handleStyleStep = (direction: 1 | -1) => {
+    const activeStyleId =
+      options.mode === "manual" && options.manualStyle
+        ? options.manualStyle
+        : generationState.styleId;
+    const nextId = getNextStyleId(activeStyleId, direction);
+
+    setOptions((prev) => ({
+      ...prev,
+      mode: "manual",
+      manualStyle: nextId,
+    }));
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile || !event.isPrimary || isSwipeIgnored(event.target)) return;
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!isMobile || !event.isPrimary) return;
+    const start = pointerStartRef.current;
+    pointerStartRef.current = null;
+    if (!start || isSwipeIgnored(event.target)) return;
+
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+
+    lastSwipeTimeRef.current = Date.now();
+    handleStyleStep(dx < 0 ? 1 : -1);
+  };
+
+  const handleClickCapture = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (Date.now() - lastSwipeTimeRef.current > 450) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
 
   return (
-    <div className="art-root">
+    <div
+      className="art-root"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onClickCapture={handleClickCapture}
+    >
       <div className="sr-only" role="status" aria-live="polite">
         {accessibilitySummary}
       </div>

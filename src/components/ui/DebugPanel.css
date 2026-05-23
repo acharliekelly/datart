@@ -152,3 +152,10 @@
     "Liberation Mono", "Courier New", monospace;
   font-size: 0.7rem;
 }
+
+@media (max-width: 768px) {
+  .debug-panel--mobile {
+    top: 13.5rem;
+    max-height: calc(100vh - 14.25rem);
+  }
+}

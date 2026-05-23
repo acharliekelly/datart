@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import type { Mode, StyleId } from "../../logic/types";
 import { STYLES } from "../art/styleRegistry";
 import "./MiniHud.css";
@@ -37,8 +37,6 @@ const MiniHud: React.FC<MiniHudProps> = ({
   onToggleAnimation,
   onToggleAudio,
 }) => {
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
-
   // which style do we *show*?
   // in manual mode, show manualStyle if set
   // in auto mode, show effectiveStyle (chosen by fingerprint)
@@ -57,40 +55,17 @@ const MiniHud: React.FC<MiniHudProps> = ({
     onStyleChange(nextId);
   }
 
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-  };
-
-  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    const start = touchStartRef.current;
-    touchStartRef.current = null;
-    const touch = event.changedTouches[0];
-    if (!start || !touch) return;
-
-    const dx = touch.clientX - start.x;
-    const dy = touch.clientY - start.y;
-    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-
-    handleStep(dx < 0 ? 1 : -1);
-  };
-
   const rootClass =
     "mini-hud" +
     (isAnimating ? " mini-hud--animating" : "") +
     (isAudioEnabled ? " mini-hud--audio-on" : "");
 
   return (
-    <div
-      className={rootClass}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
+    <div className={rootClass}>
       {/* Prev button */}
       <button 
         type="button"
-        className="mini-hud__button mini-hud__button--arrow"
+        className="mini-hud__button mini-hud__button--arrow mini-hud__button--prev"
         aria-label={`Previous style. Current style is ${labelText}`}
         onClick={() => handleStep(-1)}
       >
@@ -144,7 +119,7 @@ const MiniHud: React.FC<MiniHudProps> = ({
       {/* Next button */}
       <button 
         type="button"
-        className="mini-hud__button mini-hud__button--arrow"
+        className="mini-hud__button mini-hud__button--arrow mini-hud__button--next"
         aria-label={`Next style. Current style is ${labelText}`}
         onClick={() => handleStep(1)}
       >
