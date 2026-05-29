@@ -206,7 +206,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="art-root">
+    <main className="art-root" aria-label="DatArt generative art experience">
       <div className="sr-only" role="status" aria-live="polite">
         {accessibilitySummary}
       </div>
@@ -257,7 +257,7 @@ const App: React.FC = () => {
         isMobile={isMobile}
         hudHidden={hudHidden}
       />
-    </div>
+    </main>
   );
 };
 
