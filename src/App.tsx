@@ -265,7 +265,13 @@ const App: React.FC = () => {
 
 
   return (
-    <main className="art-root" aria-label="DatArt generative art experience">
+    <main
+      className="art-root"
+      aria-label="DatArt generative art experience"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onClickCapture={handleClickCapture}
+    >
       <div className="sr-only" role="status" aria-live="polite">
         {accessibilitySummary}
       </div>
