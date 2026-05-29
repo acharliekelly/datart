@@ -124,7 +124,6 @@ const DebugPanel: React.FC<DebugPanelProps> = ({
             <p>
               This version selected <strong>{state.styleId}</strong>.{" "}
               {complexityDescription}
-              {state.styleReason ? ` ${state.styleReason}` : ""}
             </p>
           </div>
 
