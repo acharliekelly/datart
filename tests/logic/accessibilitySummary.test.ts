@@ -36,7 +36,7 @@ describe("buildAccessibilitySummary", () => {
       prefersReducedMotion: true,
     });
 
-    expect(summary).toContain("Recursive Tree");
+    expect(summary).toContain("Broccoli");
     expect(summary).toContain("Complexity 64");
     expect(summary).toContain("automatic complexity off");
     expect(summary).toContain("reduced motion requested");

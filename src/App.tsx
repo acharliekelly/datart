@@ -265,8 +265,9 @@ const App: React.FC = () => {
 
 
   return (
-    <div
+    <main
       className="art-root"
+      aria-label="DatArt generative art experience"
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
       onClickCapture={handleClickCapture}
@@ -321,7 +322,7 @@ const App: React.FC = () => {
         isMobile={isMobile}
         hudHidden={hudHidden}
       />
-    </div>
+    </main>
   );
 };
 

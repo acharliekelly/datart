@@ -387,6 +387,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                       value={manualStyle ?? ""}
                       onChange={handleStyleChange}
                       disabled={mode !== "manual"}
+                      aria-label="Style"
                     >
                       <option value="">auto</option>
                       {STYLE_OPTIONS.map((opt) => {
